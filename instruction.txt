@@ -5,10 +5,16 @@ source ~/.bashrc
 conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
 conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
 
-conda create -n ExpoCommt python=3.8
-conda activate ExpoCommt
-
+conda create -n ExpoComm3 python=3.8
+conda activate ExpoComm3
+python -m pip install "pip==23.3.2" "setuptools==65.5.0" "wheel==0.38.4"
+python -m pip install --no-build-isolation "gym==0.21.0"
 cd ExpoComm
 pip install -r requirements.txt
 pip install git+https://github.com/moratodpg/imp_marl.git
+pip install wandb einops torch_scatter
+pip install magent==0.1.14
+pip install supersuit==3.3.2
+pip install pettingzoo==1.12.0
+pip install numpy==1.23.5
 
