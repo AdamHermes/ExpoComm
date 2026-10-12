@@ -12,7 +12,7 @@ Pillow
 pluggy==0.7.1
 portpicker==1.2.0
 probscale
-protobuf==3.6.1
+protobuf==3.20.3
 py==1.6.0
 pygame
 pyparsing==2.2.2
@@ -37,3 +37,9 @@ websocket-client==0.53.0
 whichcraft==0.5.2
 wrapt==1.10.11
 git+https://github.com/oxwhirl/smac.git
+wandb
+einops
+torch_scatter
+supersuit
+
+pip install "pettingzoo==1.22.3" "supersuit==3.7.2"
