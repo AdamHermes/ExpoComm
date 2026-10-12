@@ -5,16 +5,28 @@ source ~/.bashrc
 conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
 conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
 
-conda create -n ExpoComm3 python=3.8
-conda activate ExpoComm3
-python -m pip install "pip==23.3.2" "setuptools==65.5.0" "wheel==0.38.4"
-python -m pip install --no-build-isolation "gym==0.21.0"
 cd ExpoComm
-pip install -r requirements.txt
-pip install git+https://github.com/moratodpg/imp_marl.git
-pip install wandb einops torch_scatter
-pip install magent==0.1.14
-pip install supersuit==3.3.2
-pip install pettingzoo==1.12.0
-pip install numpy==1.23.5
+sbatch setup_expocomm_test.sh
+conda activate ExpoComm_test
+wandb login
+sbatch run_reproduce_expocomm.sh <algorithm> <environment> <experiment>
+
+#Sample run:
+# Adversarial Pursuit: 25 agent, K=1 / K=ceil(log2 N)
+sbatch run_reproduce_expocomm.sh iql_ExpoComm_one_peer_n6 MAgent_AdvPursuit ExpoComm_AdvPursuit45_s0
+sbatch run_reproduce_expocomm.sh iql_ExpoComm_static_n6   MAgent_AdvPursuit ExpoComm_AdvPursuit45_s0
+
+# Adversarial Pursuit: 45, 61 agent
+sbatch run_reproduce_expocomm.sh iql_ExpoComm_one_peer_n7 MAgent_AdvPursuit ExpoComm_AdvPursuit60_s0
+sbatch run_reproduce_expocomm.sh iql_ExpoComm_static_n7   MAgent_AdvPursuit ExpoComm_AdvPursuit60_s0
+sbatch run_reproduce_expocomm.sh iql_ExpoComm_one_peer_n7 MAgent_AdvPursuit ExpoComm_AdvPursuit70_s0
+sbatch run_reproduce_expocomm.sh iql_ExpoComm_static_n7   MAgent_AdvPursuit ExpoComm_AdvPursuit70_s0
+
+# Battle: 20, 42, 64 agent
+sbatch run_reproduce_expocomm.sh iql_ExpoComm_one_peer_n6 MAgent_Battle ExpoComm_Battle25_s0
+sbatch run_reproduce_expocomm.sh iql_ExpoComm_static_n6   MAgent_Battle ExpoComm_Battle25_s0
+sbatch run_reproduce_expocomm.sh iql_ExpoComm_one_peer_n7 MAgent_Battle ExpoComm_Battle35_s0
+sbatch run_reproduce_expocomm.sh iql_ExpoComm_static_n7   MAgent_Battle ExpoComm_Battle35_s0
+sbatch run_reproduce_expocomm.sh iql_ExpoComm_one_peer_n7 MAgent_Battle ExpoComm_Battle40_s0
+sbatch run_reproduce_expocomm.sh iql_ExpoComm_static_n7   MAgent_Battle ExpoComm_Battle40_s0
 

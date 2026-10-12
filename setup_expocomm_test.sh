@@ -11,7 +11,7 @@
 
 set -Eeuo pipefail
 
-ENV_NAME="ExpoComm_test"
+ENV_NAME="ExpoComm1"
 # Slurm can execute a copied script from a spool directory. Use the directory
 # from which sbatch was called so requirements.txt is resolved reliably.
 REPO_DIR="${SLURM_SUBMIT_DIR:-$(pwd)}"
@@ -57,5 +57,16 @@ python -m pip install "magent==0.1.14"
 python -m pip install "supersuit==3.3.2"
 python -m pip install "pettingzoo==1.12.0"
 python -m pip install "numpy==1.23.5"
+python -m pip install setproctitle
+# Install ExpoComm's customised MAgent scenarios into this environment's
+# PettingZoo package. Resolving the location through the active Python avoids
+# any machine- or Conda-prefix-specific path.
+cd ~/ExpoComm
+REPO_DIR=$PWD
+PZ_MAGENT_DIR="$(python -c 'import pathlib, pettingzoo; print(pathlib.Path(pettingzoo.__file__).parent / "magent")')"
+
+cp "${REPO_DIR}/env/battle_v3_view7.py" "${PZ_MAGENT_DIR}/"
+cp "${REPO_DIR}/env/adversarial_pursuit_view8_v3.py" "${PZ_MAGENT_DIR}/"
+ls "${PZ_MAGENT_DIR}" | grep view
 
 echo "Setup complete. Activate it with: conda activate ${ENV_NAME}"
