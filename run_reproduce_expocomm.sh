@@ -30,7 +30,14 @@ ALGORITHM="$1"
 ENVIRONMENT="$2"
 EXPERIMENT="$3"
 CONDA_ENV="${CONDA_ENV:-ExpoComm_test}"
-REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Slurm may execute a copied batch script from a spool directory.  Its submit
+# directory is the reliable project location when the job was submitted there.
+REPO_DIR="${SLURM_SUBMIT_DIR:-$(pwd)}"
+
+if [[ ! -f "${REPO_DIR}/src/main.py" ]]; then
+    echo "ERROR: ${REPO_DIR} is not the ExpoComm repository (src/main.py is missing)."
+    exit 1
+fi
 
 load_conda() {
     if command -v conda >/dev/null 2>&1; then
