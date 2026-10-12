@@ -40,7 +40,4 @@ git+https://github.com/oxwhirl/smac.git
 wandb
 einops
 torch_scatter
-supersuit==3.3.2
 magent==0.1.14
-pettingzoo==1.12.0
-numpy==1.23.5
