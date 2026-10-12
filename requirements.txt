@@ -40,16 +40,7 @@ git+https://github.com/oxwhirl/smac.git
 wandb
 einops
 torch_scatter
-supersuit
-
-pip install "pettingzoo==1.22.3" "supersuit==3.7.2"
-
-
-cd ~/ExpoComm
-PZ=/mnt/scratch/b/bach66/conda/envs/ExpoComm/lib/python3.8/site-packages/pettingzoo/magent
-cp env/battle_v3_view7.py $PZ/
-cp env/adversarial_pursuit_view8_v3.py $PZ/
-ls $PZ
-
-
-pip install "numpy==1.23.5"
+supersuit==3.3.2
+magent==0.1.14
+pettingzoo==1.12.0
+numpy==1.23.5
