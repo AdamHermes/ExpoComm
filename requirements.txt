@@ -43,3 +43,13 @@ torch_scatter
 supersuit
 
 pip install "pettingzoo==1.22.3" "supersuit==3.7.2"
+
+
+cd ~/ExpoComm
+PZ=/mnt/scratch/b/bach66/conda/envs/ExpoComm/lib/python3.8/site-packages/pettingzoo/magent
+cp env/battle_v3_view7.py $PZ/
+cp env/adversarial_pursuit_view8_v3.py $PZ/
+ls $PZ
+
+
+pip install "numpy==1.23.5"
