@@ -7,7 +7,7 @@ conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
 
 cd ExpoComm
 sbatch setup_expocomm_test.sh
-conda activate ExpoComm_test
+conda activate ExpoComm1
 wandb login
 sbatch run_reproduce_expocomm.sh <algorithm> <environment> <experiment>
 
@@ -25,7 +25,7 @@ sbatch run_reproduce_expocomm.sh iql_ExpoComm_static_n7   MAgent_AdvPursuit Expo
 # Battle: 20, 42, 64 agent
 sbatch run_reproduce_expocomm.sh iql_ExpoComm_one_peer_n6 MAgent_Battle ExpoComm_Battle25_s0
 sbatch run_reproduce_expocomm.sh iql_ExpoComm_static_n6   MAgent_Battle ExpoComm_Battle25_s0
-sbatch run_reproduce_expocomm.sh iql_ExpoComm_one_peer_n7 MAgent_Battle ExpoComm_Battle35_s0
+sbatch --nodelist=xpgd3 run_reproduce_expocomm.sh iql_ExpoComm_one_peer_n7 MAgent_Battle ExpoComm_Battle35_s0
 sbatch run_reproduce_expocomm.sh iql_ExpoComm_static_n7   MAgent_Battle ExpoComm_Battle35_s0
 sbatch run_reproduce_expocomm.sh iql_ExpoComm_one_peer_n7 MAgent_Battle ExpoComm_Battle40_s0
 sbatch run_reproduce_expocomm.sh iql_ExpoComm_static_n7   MAgent_Battle ExpoComm_Battle40_s0
