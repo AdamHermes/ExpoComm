@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=expocomm
 #SBATCH --output=slurm/expocomm_%j.out
-#SBATCH --time=12:00:00
+#SBATCH --time=3-00:00:00
 #SBATCH --cpus-per-task=4
 #SBATCH --gpus=1
 #SBATCH --mem=64G
