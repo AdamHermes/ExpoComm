@@ -7,3 +7,8 @@ conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
 
 conda create -n ExpoCommt python=3.8
 conda activate ExpoCommt
+
+cd ExpoComm
+pip install -r requirements.txt
+pip install git+https://github.com/moratodpg/imp_marl.git
+
