@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #SBATCH --job-name=expocomm
-#SBATCH --output=expocomm_%j.out
-#SBATCH --error=expocomm_%j.err
+#SBATCH --output=slurm/expocomm_%j.out
 #SBATCH --time=3-00:00:00
 #SBATCH --cpus-per-task=4
 #SBATCH --gpus=1
 #SBATCH --mem=64G
+#SBATCH --nodelist=xgpf10
 
 # Submit one reproduction run with:
 #   sbatch run_reproduce_expocomm.sh <algorithm> <environment> <experiment>
@@ -39,22 +39,8 @@ if [[ ! -f "${REPO_DIR}/src/main.py" ]]; then
     exit 1
 fi
 
-load_conda() {
-    if command -v conda >/dev/null 2>&1; then
-        source "$(conda info --base)/etc/profile.d/conda.sh"
-    elif [[ -n "${CONDA_BASE:-}" && -f "${CONDA_BASE}/etc/profile.d/conda.sh" ]]; then
-        source "${CONDA_BASE}/etc/profile.d/conda.sh"
-    elif [[ -f "${HOME}/miniconda3/etc/profile.d/conda.sh" ]]; then
-        source "${HOME}/miniconda3/etc/profile.d/conda.sh"
-    elif [[ -f "${HOME}/anaconda3/etc/profile.d/conda.sh" ]]; then
-        source "${HOME}/anaconda3/etc/profile.d/conda.sh"
-    else
-        echo "ERROR: Conda was not found. Set CONDA_BASE before sbatch."
-        exit 1
-    fi
-}
-
-load_conda
+# Match the cluster-specific setup used by run_expocomm.sh.
+source /home/b/bach66/miniconda3/etc/profile.d/conda.sh
 conda activate "${CONDA_ENV}"
 cd "${REPO_DIR}"
 
