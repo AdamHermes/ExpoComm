@@ -12,7 +12,14 @@
 set -Eeuo pipefail
 
 ENV_NAME="ExpoComm_test"
-REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Slurm can execute a copied script from a spool directory. Use the directory
+# from which sbatch was called so requirements.txt is resolved reliably.
+REPO_DIR="${SLURM_SUBMIT_DIR:-$(pwd)}"
+
+if [[ ! -f "${REPO_DIR}/requirements.txt" ]]; then
+    echo "ERROR: ${REPO_DIR} is not the ExpoComm repository (requirements.txt is missing)."
+    exit 1
+fi
 
 # Slurm jobs use a non-interactive shell, so Conda must be explicitly loaded.
 if ! command -v conda >/dev/null 2>&1; then
