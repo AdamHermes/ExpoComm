@@ -11,7 +11,7 @@
 
 set -Eeuo pipefail
 
-ENV_NAME="ExpoComm1"
+ENV_NAME="ExpoComm_test"
 # Slurm can execute a copied script from a spool directory. Use the directory
 # from which sbatch was called so requirements.txt is resolved reliably.
 REPO_DIR="${SLURM_SUBMIT_DIR:-$(pwd)}"
