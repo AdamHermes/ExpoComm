@@ -116,7 +116,7 @@ sbatch run_reproduce_expocomm.sh iql_ExpoComm_one_peer_n7 MAgent_Battle ExpoComm
 sbatch run_reproduce_expocomm.sh iql_ExpoComm_static_n7   MAgent_Battle ExpoComm_Battle35_s0
 
 # 64 agents
-sbatch run_reproduce_expocomm.sh iql_ExpoComm_one_peer_n7 MAgent_Battle ExpoComm_Battle40_s0
+sbatch -p gpu-long --nodelist=xgpf7 run_reproduce_expocomm.sh iql_ExpoComm_one_peer_n7 MAgent_Battle ExpoComm_Battle40_s0
 sbatch run_reproduce_expocomm.sh iql_ExpoComm_static_n7   MAgent_Battle ExpoComm_Battle40_s0
 ```
 
