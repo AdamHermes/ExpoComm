@@ -17,6 +17,8 @@ from pathlib import Path
 import time
 import os.path as osp
 
+from config_overrides import apply_packet_loss_cli_overrides
+
 
 def main(config_dict):
     # Setting the random seed throughout the modules
@@ -114,5 +116,6 @@ if __name__ == "__main__":
     config_dict = recursive_dict_update(config_dict, env_config)
     config_dict = recursive_dict_update(config_dict, alg_config)
     config_dict = recursive_dict_update(config_dict, exp_config)
+    config_dict = apply_packet_loss_cli_overrides(config_dict, params)
 
     main(config_dict)

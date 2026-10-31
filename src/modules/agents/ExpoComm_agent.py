@@ -42,14 +42,40 @@ class ExpoCommSAgent(nn.Module):
         hidden_info = (h, msg)
         return hidden_info
 
-    def forward(self, inputs, hidden_info, topk_indices):
+    def _packet_keep_mask(self, sender_indices, test_mode):
+        """Sample whole-message delivery for each selected communication link."""
+        percent = float(getattr(self.args, "packet_loss_percent", 0.0))
+        if not 0.0 <= percent <= 100.0:
+            raise ValueError(
+                "packet_loss_percent must be between 0 and 100, "
+                f"got {percent}"
+            )
+
+        enabled_key = "packet_loss_test" if test_mode else "packet_loss_train"
+        enabled = bool(getattr(self.args, enabled_key, False))
+        if not enabled or percent == 0.0:
+            return th.ones_like(sender_indices, dtype=th.bool)
+
+        keep_mask = th.rand(
+            sender_indices.shape, device=sender_indices.device
+        ) >= (percent / 100.0)
+
+        # The zero-offset ExpoComm neighbour is the receiver itself and does
+        # not cross a communication link, so it cannot lose a packet.
+        receiver_shape = [1, self.n_agents] + [1] * (sender_indices.dim() - 2)
+        receiver_indices = th.arange(
+            self.n_agents, device=sender_indices.device
+        ).view(*receiver_shape)
+        return keep_mask | sender_indices.eq(receiver_indices)
+
+    def forward(self, inputs, hidden_info, topk_indices, test_mode=False):
 
         hidden_state, msg = hidden_info
         h_in = hidden_state.reshape(-1, self.args.hidden_dim)
 
         x = F.relu(self.fc1(inputs))
         h = self.rnn(x, h_in)
-        msg = self._communicate(topk_indices, msg, h)
+        msg = self._communicate(topk_indices, msg, h, test_mode=test_mode)
 
         # detach msg for main loss, use aux loss for msg
         out = th.cat([h, msg], dim=-1)
@@ -61,9 +87,10 @@ class ExpoCommSAgent(nn.Module):
     def aux_forward(self, msg):
         return self.predict_net(msg)
 
-    def _communicate(self, topk_indices, other_msg, ego_h):
+    def _communicate(self, topk_indices, other_msg, ego_h, test_mode=False):
         bs, n_agents, topk = topk_indices.shape
         assert n_agents == self.n_agents
+        keep_mask = self._packet_keep_mask(topk_indices, test_mode)
         # (bs, n_agents, topk, hidden_dim)
         topk_indices = topk_indices[:, :, :, None].expand(
             -1, -1, -1, self.args.hidden_dim
@@ -81,7 +108,11 @@ class ExpoCommSAgent(nn.Module):
         k = self.msg_k(msg_received)
         # (bs, n_agents, topk)
         attention = th.matmul(k, q)[:, :, :, 0]
-        attention = F.softmax(attention / math.sqrt(self.attention_dim), dim=-1)
+        attention = attention / math.sqrt(self.attention_dim)
+        attention = attention.masked_fill(
+            ~keep_mask, th.finfo(attention.dtype).min
+        )
+        attention = F.softmax(attention, dim=-1)
         # (bs, n_agents, topk, hidden_dim)
         m = self.msg_v(msg_received)
         # (bs, n_agents, hidden_dim)
@@ -121,9 +152,10 @@ class ExpoCommOAgent(ExpoCommSAgent):
             nn.Linear(args.hidden_dim, self.state_dim),
         )
 
-    def _communicate(self, topk_indices, other_msg, ego_h):
+    def _communicate(self, topk_indices, other_msg, ego_h, test_mode=False):
         bs, n_agents = topk_indices.shape
         assert n_agents == self.n_agents
+        keep_mask = self._packet_keep_mask(topk_indices, test_mode)
         # (bs, n_agents, 1, hidden_dim)
         topk_indices = topk_indices[:, :, None, None].expand(
             -1, -1, -1, self.args.hidden_dim
@@ -145,7 +177,9 @@ class ExpoCommOAgent(ExpoCommSAgent):
 
         msg_input = msg_input.reshape(bs * n_agents, -1)
 
-        m_aggregated = self.msg_rnn(msg_input, msg_ego)
+        candidate_msg = self.msg_rnn(msg_input, msg_ego)
+        keep_mask = keep_mask.reshape(bs * n_agents, 1)
+        m_aggregated = th.where(keep_mask, candidate_msg, msg_ego)
 
         return m_aggregated.reshape(bs * n_agents, -1)
 

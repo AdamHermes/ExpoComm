@@ -140,6 +140,60 @@ Alternatively, request a node for one submission without changing the script:
 sbatch --nodelist=<GPU_NODE> run_reproduce_expocomm.sh iql_ExpoComm_one_peer_n7 MAgent_Battle ExpoComm_Battle35_s0
 ```
 
+## 6. Evaluate a Packet-loss Sweep
+
+ExpoComm agents exchange tensors inside one Python process, so host-level
+`tc/netem` does not affect their communication. Use the logical channel model
+to drop complete agent messages independently on each remote link and timestep.
+
+The sweep launcher evaluates an existing evaluation experiment at 0%, 10%, and
+20% loss by default:
+
+```bash
+bash run_packet_loss_sweep.sh \
+  iql_ExpoComm_one_peer_n6 \
+  MAgent_Battle \
+  ExpoComm_Battle25_eval_5009240
+```
+
+Pass explicit percentages to use a different sweep:
+
+```bash
+bash run_packet_loss_sweep.sh \
+  iql_ExpoComm_one_peer_n6 \
+  MAgent_Battle \
+  ExpoComm_Battle25_eval_5009240 \
+  0 5 10 20 30 50
+```
+
+Each submitted job enables packet loss only during evaluation, appends the
+rate to `run_name`, evaluates 100 episodes, and disables GIF recording so
+concurrent jobs cannot overwrite one another. Override the episode count with
+`PACKET_LOSS_TEST_EPISODES`, for example:
+
+```bash
+PACKET_LOSS_TEST_EPISODES=250 bash run_packet_loss_sweep.sh \
+  iql_ExpoComm_one_peer_n6 MAgent_Battle ExpoComm_Battle25_eval_5009240
+```
+
+A single run can also be submitted directly:
+
+```bash
+sbatch run_reproduce_expocomm.sh \
+  iql_ExpoComm_one_peer_n6 \
+  MAgent_Battle \
+  ExpoComm_Battle25_eval_5009240 \
+  --packet-loss-percent=20 \
+  --packet-loss-mode=test \
+  --run-name-suffix=loss20 \
+  --test-nepisode=100 \
+  --record-video=false
+```
+
+Valid modes are `off`, `train`, `test`, and `both`. Self-links are never
+dropped. `packet_loss_percent` is a probability parameter, so the realized
+fraction in a finite run approaches but need not equal the requested value.
+
 ## Troubleshooting
 
 - **`conda: command not found`:** set `CONDA_BASE` to the Miniconda or Anaconda

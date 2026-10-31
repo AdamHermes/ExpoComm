@@ -8,7 +8,7 @@
 #SBATCH --nodelist=xgpf10
 
 # Submit one reproduction run with:
-#   sbatch run_reproduce_expocomm.sh <algorithm> <environment> <experiment>
+#   sbatch run_reproduce_expocomm.sh <algorithm> <environment> <experiment> [extra main.py args]
 #
 # Examples (the paper's MAgent results):
 #   sbatch run_reproduce_expocomm.sh iql_ExpoComm_one_peer_n6 MAgent_AdvPursuit ExpoComm_AdvPursuit45_s0
@@ -21,14 +21,15 @@
 
 set -Eeuo pipefail
 
-if [[ $# -ne 3 ]]; then
-    echo "Usage: sbatch $0 <algorithm> <environment> <experiment>"
+if [[ $# -lt 3 ]]; then
+    echo "Usage: sbatch $0 <algorithm> <environment> <experiment> [extra main.py args]"
     exit 2
 fi
 
 ALGORITHM="$1"
 ENVIRONMENT="$2"
 EXPERIMENT="$3"
+EXTRA_ARGS=("${@:4}")
 CONDA_ENV="${CONDA_ENV:-ExpoComm_test}"
 # Slurm may execute a copied batch script from a spool directory.  Its submit
 # directory is the reliable project location when the job was submitted there.
@@ -39,8 +40,14 @@ if [[ ! -f "${REPO_DIR}/src/main.py" ]]; then
     exit 1
 fi
 
-# Match the cluster-specific setup used by run_expocomm.sh.
-source /home/b/bach66/miniconda3/etc/profile.d/conda.sh
+# Match the cluster-specific setup used by run_expocomm.sh while allowing a
+# different Conda installation to be selected at submission time.
+CONDA_SH="${CONDA_SH:-/home/b/bach66/miniconda3/etc/profile.d/conda.sh}"
+if [[ ! -f "${CONDA_SH}" ]]; then
+    echo "ERROR: Conda setup script not found: ${CONDA_SH}" >&2
+    exit 1
+fi
+source "${CONDA_SH}"
 conda activate "${CONDA_ENV}"
 cd "${REPO_DIR}"
 
@@ -49,9 +56,11 @@ echo "Environment: ${CONDA_ENV}"
 echo "Algorithm: ${ALGORITHM}"
 echo "Environment config: ${ENVIRONMENT}"
 echo "Experiment config: ${EXPERIMENT}"
+echo "Extra arguments: ${EXTRA_ARGS[*]:-(none)}"
 nvidia-smi -L
 
 python src/main.py \
     --config="${ALGORITHM}" \
     --env-config="${ENVIRONMENT}" \
-    --exp-config="${EXPERIMENT}"
+    --exp-config="${EXPERIMENT}" \
+    "${EXTRA_ARGS[@]}"
