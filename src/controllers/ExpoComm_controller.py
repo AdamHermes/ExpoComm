@@ -51,7 +51,10 @@ class ExpoCommMAC(BasicMAC):
         agent_inputs, topk_indices = self._build_inputs(ep_batch, t)
         avail_actions = ep_batch["avail_actions"][:, t]
         agent_outs, self.hidden_states, msgs = self.agent(
-            agent_inputs, self.hidden_states, topk_indices
+            agent_inputs,
+            self.hidden_states,
+            topk_indices,
+            test_mode=test_mode,
         )
         states_predicted = self.agent.aux_forward(msgs)
 
