@@ -5,7 +5,6 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --gpus=1
 #SBATCH --mem=64G
-#SBATCH --nodelist=xgpf10
 
 # Submit one reproduction run with:
 #   sbatch run_reproduce_expocomm.sh <algorithm> <environment> <experiment> [extra main.py args]
