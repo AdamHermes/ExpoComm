@@ -5,6 +5,7 @@ import time
 import threading
 import json
 
+import numpy as np
 import torch as th
 from types import SimpleNamespace as SN
 from utils.logging import Logger
@@ -94,6 +95,13 @@ def evaluate_sequential(args, runner):
         runner.logger.console_logger.info("Saved evaluation results to %s", result_path)
 
 
+def _runtime_config_json_default(value):
+    # Environment metadata can include NumPy integers from Gym spaces.
+    if isinstance(value, np.integer):
+        return int(value)
+    raise TypeError(f"Object of type {type(value).__name__} is not JSON serializable")
+
+
 def run_sequential(args, logger):
 
     # Init runner so we can get env info
@@ -105,7 +113,7 @@ def run_sequential(args, logger):
     args.n_actions = env_info["n_actions"]
     args.state_shape = env_info["state_shape"]
     with open(os.path.join(args.work_dir, "runtime_config.json"), "w", encoding="utf-8") as output:
-        json.dump(vars(args), output, indent=2)
+        json.dump(vars(args), output, indent=2, default=_runtime_config_json_default)
 
     if is_global_reward(args):
         scheme = {
