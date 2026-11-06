@@ -1,0 +1,20 @@
+# IC3Net adaptation; full MAIL protocol has NOT been verified.
+env: ic3_traffic
+reward_scope: team
+use_agent_active: True
+use_agent_reset: True
+env_args:
+  n_agents: 10
+  episode_limit: 40
+  dim: 14
+  reward_aggregation: mean
+  difficulty: medium
+  vision: 1
+  add_rate_min: 0.2
+  add_rate_max: 0.2
+test_nepisode: 100
+test_interval: 10000
+learner_log_interval: 1000
+runner_log_interval: 1000
+log_interval: 10000
+t_max: 2000000

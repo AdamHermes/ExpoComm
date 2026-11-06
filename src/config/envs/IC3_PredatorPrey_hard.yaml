@@ -1,0 +1,18 @@
+# IC3Net adaptation; full MAIL protocol has NOT been verified.
+env: ic3_predator
+reward_scope: team
+use_agent_active: True
+env_args:
+  n_agents: 10
+  episode_limit: 80
+  dim: 20
+  reward_aggregation: mean
+  vision: 1
+  mode: mixed
+  no_stay: True
+test_nepisode: 100
+test_interval: 10000
+learner_log_interval: 1000
+runner_log_interval: 1000
+log_interval: 10000
+t_max: 2000000

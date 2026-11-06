@@ -1,4 +1,8 @@
 # --- Defaults ---
+# legacy preserves historical reward handling; new environments set team/individual.
+reward_scope: legacy
+use_agent_active: False
+log_communication: False
 
 # --- pymarl options ---
 runner: "episode" # Runs 1 env for an episode

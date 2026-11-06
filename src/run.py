@@ -16,6 +16,7 @@ from runners import REGISTRY as r_REGISTRY
 from controllers import REGISTRY as mac_REGISTRY
 from components.episode_buffer import ReplayBuffer
 from components.transforms import OneHot
+from components.reward_scope import is_global_reward
 
 
 def run(config, console_logger):
@@ -28,6 +29,7 @@ def run(config, console_logger):
 
     # setup loggers
     logger = Logger(console_logger)
+    logger.metric_path = os.path.join(args.work_dir, "metrics.jsonl")
 
     # configure tensorboard logger
     # unique_token = "{}__{}".format(args.name, datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
@@ -66,6 +68,31 @@ def evaluate_sequential(args, runner):
 
     runner.close_env()
 
+    result_path = getattr(args, "eval_result_path", None)
+    if result_path:
+        metrics = {
+            key: float(values[-1][1])
+            for key, values in runner.logger.stats.items()
+            if key.startswith("test_") and values
+        }
+        if "test_return_mean" not in metrics:
+            raise RuntimeError("Evaluation completed without test_return_mean")
+        result = {
+            "seed": args.seed,
+            "packet_loss_percent": args.packet_loss_percent,
+            "test_nepisode": args.test_nepisode,
+            "checkpoint": os.path.realpath(os.path.join(args.checkpoint_path, str(runner.t_env))),
+            "algorithm": args.name,
+            "environment": args.env,
+            "metrics": metrics,
+        }
+        os.makedirs(os.path.dirname(os.path.abspath(result_path)), exist_ok=True)
+        temporary_path = result_path + ".tmp"
+        with open(temporary_path, "w", encoding="utf-8") as output:
+            json.dump(result, output, indent=2, allow_nan=False)
+        os.replace(temporary_path, result_path)
+        runner.logger.console_logger.info("Saved evaluation results to %s", result_path)
+
 
 def run_sequential(args, logger):
 
@@ -77,8 +104,10 @@ def run_sequential(args, logger):
     args.n_agents = env_info["n_agents"]
     args.n_actions = env_info["n_actions"]
     args.state_shape = env_info["state_shape"]
+    with open(os.path.join(args.work_dir, "runtime_config.json"), "w", encoding="utf-8") as output:
+        json.dump(vars(args), output, indent=2)
 
-    if args.env == "struct_marl":
+    if is_global_reward(args):
         scheme = {
             "state": {"vshape": env_info["state_shape"]},
             "obs": {"vshape": env_info["obs_shape"], "group": "agents"},
@@ -109,6 +138,10 @@ def run_sequential(args, logger):
         if pos_flag:
             scheme["positions"] = {"vshape": (env_info["n_agents"] * 2,)}
 
+    if getattr(args, "use_agent_active", False):
+        scheme["agent_active"] = {"vshape": (1,), "group": "agents", "dtype": th.uint8}
+    if getattr(args, "use_agent_reset", False):
+        scheme["agent_reset"] = {"vshape": (1,), "group": "agents", "dtype": th.uint8}
     groups = {"agents": args.n_agents}
     preprocess = {"actions": ("actions_onehot", [OneHot(out_dim=args.n_actions)])}
 
@@ -139,6 +172,8 @@ def run_sequential(args, logger):
         timestep_to_load = 0
 
         if not os.path.isdir(args.checkpoint_path):
+            if getattr(args, "eval_result_path", None):
+                raise FileNotFoundError(args.checkpoint_path)
             logger.console_logger.info(
                 "Checkpoint directiory {} doesn't exist".format(args.checkpoint_path)
             )
@@ -151,6 +186,10 @@ def run_sequential(args, logger):
             if os.path.isdir(full_name) and name.isdigit():
                 timesteps.append(int(name))
 
+        if not timesteps:
+            raise ValueError("No numbered checkpoints in " + args.checkpoint_path)
+        if getattr(args, "eval_result_path", None) and args.load_step and args.load_step not in timesteps:
+            raise ValueError("Requested evaluation checkpoint does not exist: " + str(args.load_step))
         if args.load_step == 0:
             # choose the max timestep
             timestep_to_load = max(timesteps)
@@ -241,7 +280,17 @@ def run_sequential(args, logger):
             logger.print_recent_stats()
             last_log_T = runner.t_env
 
+    # Evaluate and save the final trained policy at the same actual step.
+    for _ in range(max(1, args.test_nepisode // runner.batch_size)):
+        runner.run(test_mode=True)
+    if args.save_model:
+        final_path = os.path.join(args.work_dir, "models", str(runner.t_env))
+        os.makedirs(final_path, exist_ok=True)
+        learner.save_models(final_path)
     runner.close_env()
+    with open(os.path.join(args.work_dir, "completed.json"), "w", encoding="utf-8") as output:
+        json.dump({"actual_steps": runner.t_env, "requested_steps": args.t_max,
+                   "episodes": episode, "wall_seconds": time.time() - start_time}, output, indent=2)
     logger.console_logger.info("Finished Training")
 
 

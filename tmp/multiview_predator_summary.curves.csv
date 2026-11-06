@@ -1,0 +1,3 @@
+algorithm,environment,env_args,seed,step,value
+qmix_expocomm_mv_adaptive,ic3_predator,"{""dim"": 10, ""episode_limit"": 40, ""mode"": ""mixed"", ""n_agents"": 5, ""no_stay"": true, ""reward_aggregation"": ""mean"", ""vision"": 1}",0,40,-1.7999999970197678
+qmix_expocomm_mv_adaptive,ic3_predator,"{""dim"": 10, ""episode_limit"": 40, ""mode"": ""mixed"", ""n_agents"": 5, ""no_stay"": true, ""reward_aggregation"": ""mean"", ""vision"": 1}",0,120,-2.0000000298023224

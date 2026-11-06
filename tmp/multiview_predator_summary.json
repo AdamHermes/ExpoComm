@@ -1,0 +1,16 @@
+[
+  {
+    "algorithm": "qmix_expocomm_mv_adaptive",
+    "environment": "ic3_predator",
+    "env_args": "{\"dim\": 10, \"episode_limit\": 40, \"mode\": \"mixed\", \"n_agents\": 5, \"no_stay\": true, \"reward_aggregation\": \"mean\", \"vision\": 1}",
+    "requested_steps": 100,
+    "evaluation_episodes": 2,
+    "metric": "test_return_mean",
+    "seeds": 1,
+    "mean": -2.0000000298023224,
+    "seed_std": null,
+    "bootstrap95_low": null,
+    "bootstrap95_high": null,
+    "wall_seconds_mean": 6.059205770492554
+  }
+]

@@ -6,6 +6,7 @@ import torch as th
 import torch.nn.functional as F
 from torch.optim import Adam
 from components.standarize_stream import RunningMeanStd
+from components.reward_scope import is_global_reward
 
 
 class QLearner:
@@ -13,7 +14,8 @@ class QLearner:
         self.args = args
         self.mac = mac
         self.logger = logger
-        self.global_reward = args.env == "struct_marl"  # only true for IMP env
+        self.global_reward = is_global_reward(args)
+        self.n_agents = args.n_agents
 
         self.params = list(mac.parameters())
         self.last_target_update_episode = 0

@@ -6,6 +6,8 @@ from components.episode_buffer import EpisodeBatch
 import numpy as np
 import imageio
 import os
+import torch as th
+from components.reward_scope import is_global_reward
 
 
 class EpisodeRunner:
@@ -18,9 +20,12 @@ class EpisodeRunner:
 
         # some baseline need this info
         self.pos_flag = getattr(self.args, "pos_flag", False)
-        self.global_reward = args.env == "struct_marl"
+        self.global_reward = is_global_reward(args)
 
         self.env = env_REGISTRY[self.args.env](**self.args.env_args)
+        if hasattr(self.env, "reward_aggregation"):
+            if self.global_reward == (self.env.reward_aggregation == "individual"):
+                raise ValueError("Environment reward aggregation disagrees with reward_scope")
         self.episode_limit = self.env.episode_limit
         self.t = 0
 
@@ -60,6 +65,17 @@ class EpisodeRunner:
         self.env.reset()
         self.t = 0
 
+    def _active_data(self):
+        if not getattr(self.args, "use_agent_active", False):
+            return {}
+        if not hasattr(self.env, "get_agent_active"):
+            raise ValueError("use_agent_active requires an explicit environment active mask")
+        active = np.asarray(self.env.get_agent_active(), dtype=np.uint8).reshape(-1, 1)
+        data = {"agent_active": [active]}
+        if getattr(self.args, "use_agent_reset", False):
+            data["agent_reset"] = [np.asarray(self.env.get_agent_reset(), dtype=np.uint8).reshape(-1, 1)]
+        return data
+
     def run(self, test_mode=False):
         self.reset()
 
@@ -70,6 +86,7 @@ class EpisodeRunner:
 
         terminated = False
         episode_return = 0
+        communication = {}
         self.mac.init_hidden(batch_size=self.batch_size)
 
         while not terminated:
@@ -79,6 +96,7 @@ class EpisodeRunner:
                 "avail_actions": [self.env.get_avail_actions()],
                 "obs": [self.env.get_obs()],
             }
+            pre_transition_data.update(self._active_data())
             if self.pos_flag:
                 pre_transition_data["positions"] = [self.env.get_positions()]
 
@@ -86,9 +104,13 @@ class EpisodeRunner:
 
             # Pass the entire batch of experiences up till now to the agents
             # Receive the actions for each agent at this timestep in a batch of size 1
-            actions = self.mac.select_actions(
-                self.batch, t_ep=self.t, t_env=self.t_env, test_mode=test_mode
-            )
+            with th.no_grad():
+                actions = self.mac.select_actions(
+                    self.batch, t_ep=self.t, t_env=self.t_env, test_mode=test_mode
+                )
+            if getattr(self.args, "log_communication", False) and hasattr(self.mac, "communication_stats"):
+                for key, value in self.mac.communication_stats(self.batch, self.t).items():
+                    communication[key] = communication.get(key, 0.0) + value
 
             reward, terminated, env_info = self.env.step(actions[0])
             if test_mode and self.args.render:
@@ -123,6 +145,7 @@ class EpisodeRunner:
             "avail_actions": [self.env.get_avail_actions()],
             "obs": [self.env.get_obs()],
         }
+        last_data.update(self._active_data())
         if test_mode and self.args.render:
             print(f"Episode return: {episode_return}")
         if record_video:
@@ -131,10 +154,14 @@ class EpisodeRunner:
         self.batch.update(last_data, ts=self.t)
 
         # Select actions in the last stored state
-        actions = self.mac.select_actions(
-            self.batch, t_ep=self.t, t_env=self.t_env, test_mode=test_mode
-        )
+        with th.no_grad():
+            actions = self.mac.select_actions(
+                self.batch, t_ep=self.t, t_env=self.t_env, test_mode=test_mode
+            )
         self.batch.update({"actions": actions}, ts=self.t)
+        # No communication is executed for the bootstrap-only observation.
+        for key, value in communication.items():
+            env_info[key + "_per_step"] = value / max(self.t, 1)
 
         cur_stats = self.test_stats if test_mode else self.train_stats
         cur_returns = self.test_returns if test_mode else self.train_returns

@@ -158,8 +158,11 @@ ExpoComm agents exchange tensors inside one Python process, so host-level
 `tc/netem` does not affect their communication. Use the logical channel model
 to drop complete agent messages independently on each remote link and timestep.
 
-The sweep launcher evaluates an existing evaluation experiment at 0%, 10%, and
-20% loss by default:
+The sweep launcher evaluates an existing checkpoint at 0%, 10%, 20%, 30%, and 50% loss
+using evaluation seeds 0, 1, 2, 3, 4 and 100 episodes per seed by default.
+This submits **25 Slurm jobs (2,500 episodes total)**. Run from the repository
+on the cluster. Check `checkpoint_path` and `load_step` in the experiment YAML
+first; sweep jobs require the exact numbered checkpoint when `load_step` is nonzero.
 
 ```bash
 bash run_packet_loss_sweep.sh \
@@ -178,15 +181,43 @@ bash run_packet_loss_sweep.sh \
   0 5 10 20 30 50
 ```
 
-Each submitted job enables packet loss only during evaluation, appends the
-rate to `run_name`, evaluates 100 episodes, and disables GIF recording so
-concurrent jobs cannot overwrite one another. Override the episode count with
-`PACKET_LOSS_TEST_EPISODES`, for example:
+Each job forces evaluation, enables loss only during evaluation, includes the
+rate and evaluation seed in `run_name`, and disables GIF recording. Seeds change
+evaluation randomness; they do not retrain the model. Override the seed list
+(space-separated) and episode count with environment variables, for example:
 
 ```bash
-PACKET_LOSS_TEST_EPISODES=250 bash run_packet_loss_sweep.sh \
+PACKET_LOSS_SEEDS="0 1 2 3 4" PACKET_LOSS_TEST_EPISODES=250 bash run_packet_loss_sweep.sh \
   iql_ExpoComm_one_peer_n6 MAgent_Battle ExpoComm_Battle25_eval_5009240
 ```
+
+A quick smoke run uses `PACKET_LOSS_SEEDS="0" PACKET_LOSS_TEST_EPISODES=10`
+before the same command (5 jobs, 50 episodes total).
+
+The script prints a unique `packet_loss_results/sweep_...` directory. It contains
+`manifest.tsv` (all expected runs), `jobs.tsv` (submitted job IDs), and one JSON
+file per successful run. Use `PACKET_LOSS_RESULTS_ROOT` to change the parent
+directory. Metrics are still sent to W&B and printed to the Slurm log.
+After all jobs finish, run the printed command, for example:
+
+```bash
+python scripts/summarize_packet_loss.py packet_loss_results/sweep_<YOUR_SWEEP>
+```
+
+The summary refuses incomplete sweeps or mixed checkpoints. It prints key metrics
+and writes `summary.csv`: mean across evaluation seeds, sample standard deviation
+between seed means, approximate 95% percentile bootstrap intervals (10,000 seed
+resamples), and absolute difference from the 0% baseline when present. For win
+rates, multiply the difference by 100 to obtain percentage points. A single seed
+has no interval. `test_return_std` remains the within-run episode reward spread;
+`seed_std` is the spread between seed-level metric values.
+
+Five seeds are a starting point; intervals with few seeds may be unreliable.
+These intervals describe evaluation variation for one fixed checkpoint, not
+variation across independently trained policies. The same seed list is used at
+each loss rate, but action trajectories and random-number consumption can diverge;
+do not interpret the runs as matched episode pairs. To compare methods, evaluate
+their checkpoints separately with the same rates, seeds, and episode counts.
 
 A single run can also be submitted directly:
 
@@ -197,7 +228,9 @@ sbatch run_reproduce_expocomm.sh \
   ExpoComm_Battle25_eval_5009240 \
   --packet-loss-percent=20 \
   --packet-loss-mode=test \
-  --run-name-suffix=loss20 \
+  --run-name-suffix=loss20_seed0 \
+  --eval-seed=0 \
+  --eval-result-path=packet_loss_results/manual_loss20_seed0.json \
   --test-nepisode=100 \
   --record-video=false
 ```

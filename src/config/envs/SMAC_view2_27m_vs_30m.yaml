@@ -1,0 +1,13 @@
+# Sight-range-2 adaptation; remaining MAIL settings require protocol audit.
+env: smac_limited_view
+reward_scope: team
+use_agent_active: True
+env_args:
+  map_name: 27m_vs_30m
+  sight_range: 2.0
+  difficulty: "7"
+  reward_only_positive: True
+  reward_scale: True
+test_nepisode: 100
+test_interval: 10000
+t_max: 2000000

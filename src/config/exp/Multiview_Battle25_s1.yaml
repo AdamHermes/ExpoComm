@@ -1,0 +1,6 @@
+exp_name: Multiview_Battle25
+run_name: Multiview_Battle25_s1
+seed: 1
+env_args:
+  map_size: 25
+  pretrained_ckpt: battle.pt

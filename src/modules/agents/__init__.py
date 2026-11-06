@@ -15,3 +15,10 @@ REGISTRY["ExpoComm_static"] = ExpoCommSAgent
 REGISTRY["ExpoComm_one_peer"] = ExpoCommOAgent
 REGISTRY["ExpoComm_static_cont"] = ExpoCommSContAgent
 REGISTRY["ExpoComm_one_peer_cont"] = ExpoCommOContAgent
+
+from .causal_exp_agent import CausalExpAgent
+
+REGISTRY["causal_exp"] = CausalExpAgent
+
+from .expocomm_multiview_agent import ExpoCommMultiViewAgent
+REGISTRY["expocomm_multiview"] = ExpoCommMultiViewAgent

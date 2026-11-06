@@ -1,7 +1,10 @@
 import numpy as np
 import os
 import random
-import collections
+from collections.abc import Mapping
+import json
+import subprocess
+import hashlib
 from os.path import dirname, abspath
 from copy import deepcopy
 import sys
@@ -9,21 +12,24 @@ import torch as th
 from utils.logging import get_logger
 import yaml
 
-import wandb
 
 from run import run
-import setproctitle
+try:
+    import setproctitle
+except ImportError:
+    setproctitle = None
 from pathlib import Path
 import time
 import os.path as osp
 
-from config_overrides import apply_packet_loss_cli_overrides
+from config_overrides import apply_packet_loss_cli_overrides, apply_experiment_cli_overrides
 
 
 def main(config_dict):
     # Setting the random seed throughout the modules
     config = config_copy(config_dict)
     np.random.seed(config["seed"])
+    random.seed(config["seed"])
     th.manual_seed(config["seed"])
     config["env_args"]["seed"] = config["seed"]
 
@@ -35,20 +41,27 @@ def main(config_dict):
     Path(work_dir).mkdir(parents=True, exist_ok=True)
     config["work_dir"] = work_dir
 
-    setproctitle.setproctitle(
-        "-".join([config["env"], config["name"], config["run_name"]])
-    )
+    if setproctitle is not None:
+        setproctitle.setproctitle("-".join([config["env"], config["name"], config["run_name"]]))
+    with open(osp.join(work_dir, "config.json"), "w", encoding="utf-8") as output:
+        json.dump(config, output, indent=2)
+    revision = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True)
+    with open(osp.join(work_dir, "revision.txt"), "w", encoding="utf-8") as output:
+        output.write(revision.stdout.strip() + "\nWorking tree may include uncommitted changes.\n")
+    source_root = Path(__file__).resolve().parent
+    hashes = {str(path.relative_to(source_root)): hashlib.sha256(path.read_bytes()).hexdigest()
+              for path in sorted(source_root.rglob("*.py"))}
+    with open(osp.join(work_dir, "source_hashes.json"), "w", encoding="utf-8") as output:
+        json.dump(hashes, output, indent=2)
 
     console_logger = get_logger(
         f"{exp_name} - {algo_name} - {run_name}",
         log_file=osp.join(work_dir, f"{timestamp}.log"),
     )
-    wandb.init(
-        project=exp_name,
-        name=run_name + "-" + algo_name + "-" + timestamp,
-        #entity="lxxxxr",
-        config=config,
-    )
+    if config.get("wandb_mode", "online") != "disabled":
+        import wandb
+        wandb.init(project=exp_name, name=run_name + "-" + algo_name + "-" + timestamp,
+                   config=config, mode=config.get("wandb_mode", "online"))
     run(config, console_logger)
 
 
@@ -79,7 +92,7 @@ def _get_config(params, arg_name, subfolder):
 
 def recursive_dict_update(d, u):
     for k, v in u.items():
-        if isinstance(v, collections.Mapping):
+        if isinstance(v, Mapping):
             d[k] = recursive_dict_update(d.get(k, {}), v)
         else:
             d[k] = v
@@ -117,5 +130,8 @@ if __name__ == "__main__":
     config_dict = recursive_dict_update(config_dict, alg_config)
     config_dict = recursive_dict_update(config_dict, exp_config)
     config_dict = apply_packet_loss_cli_overrides(config_dict, params)
+    config_dict = apply_experiment_cli_overrides(config_dict, params)
+    if len(params) > 1:
+        raise ValueError("Unrecognized arguments: " + " ".join(params[1:]))
 
     main(config_dict)

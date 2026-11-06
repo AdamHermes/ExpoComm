@@ -1,0 +1,15 @@
+# Integration test only: shortened episodes, not a benchmark result.
+exp_name: Multiview_Smoke
+run_name: Battle25_smoke
+seed: 0
+use_cuda: False
+batch_size: 2
+buffer_size: 4
+test_nepisode: 2
+test_interval: 1000
+learner_log_interval: 1
+t_max: 60
+env_args:
+  map_size: 25
+  max_cycles: 20
+  pretrained_ckpt: battle.pt

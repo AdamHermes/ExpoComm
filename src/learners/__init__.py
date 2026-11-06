@@ -1,21 +1,25 @@
-from .q_learner import QLearner, AuxQLearner, ContQLearner
-from .coma_learner import COMALearner
-from .qtran_learner import QLearner as QTranLearner
-from .actor_critic_learner import ActorCriticLearner
-from .actor_critic_pac_learner import PACActorCriticLearner
-from .actor_critic_pac_dcg_learner import PACDCGLearner
-from .maddpg_learner import MADDPGLearner
-from .ppo_learner import PPOLearner
+"""Load only the selected learner's optional dependencies."""
+from importlib import import_module
+from functools import partial
 
-REGISTRY = {}
 
-REGISTRY["q_learner"] = QLearner
-REGISTRY["aux_q_learner"] = AuxQLearner  # customized
-REGISTRY["cont_q_learner"] = ContQLearner  # customized
-REGISTRY["coma_learner"] = COMALearner
-REGISTRY["qtran_learner"] = QTranLearner
-REGISTRY["actor_critic_learner"] = ActorCriticLearner
-REGISTRY["maddpg_learner"] = MADDPGLearner
-REGISTRY["ppo_learner"] = PPOLearner
-REGISTRY["pac_learner"] = PACActorCriticLearner
-REGISTRY["pac_dcg_learner"] = PACDCGLearner
+def _construct(module, name, *args, **kwargs):
+    return getattr(import_module("." + module, __name__), name)(*args, **kwargs)
+
+
+REGISTRY = {
+    key: partial(_construct, module, name)
+    for key, module, name in (
+        ("q_learner", "q_learner", "QLearner"),
+        ("aux_q_learner", "q_learner", "AuxQLearner"),
+        ("cont_q_learner", "q_learner", "ContQLearner"),
+        ("multiview_q_learner", "multiview_q_learner", "MultiViewQLearner"),
+        ("coma_learner", "coma_learner", "COMALearner"),
+        ("qtran_learner", "qtran_learner", "QLearner"),
+        ("actor_critic_learner", "actor_critic_learner", "ActorCriticLearner"),
+        ("maddpg_learner", "maddpg_learner", "MADDPGLearner"),
+        ("ppo_learner", "ppo_learner", "PPOLearner"),
+        ("pac_learner", "actor_critic_pac_learner", "PACActorCriticLearner"),
+        ("pac_dcg_learner", "actor_critic_pac_dcg_learner", "PACDCGLearner"),
+    )
+}

@@ -102,3 +102,18 @@ class ExpoCommMAC(BasicMAC):
             topk_index = t % self.args.topk_neighbors
             topk_indices = topk_indices[:, :, topk_index]
         return inputs, topk_indices
+
+    def communication_stats(self, batch, t):
+        """Scheduled non-self payload before drops; no headers/control traffic.
+
+        Counts fixed slots like the original execution, including zero-message
+        inactive slots. These are model link counts, not measured network IO.
+        """
+        neighbors = get_exp_neighbors(batch.batch_size, self.n_agents, self.args.topk_neighbors)
+        if self.one_peer:
+            neighbors = neighbors[:, :, t % self.args.topk_neighbors:t % self.args.topk_neighbors + 1]
+        receivers = th.arange(self.n_agents).view(1, -1, 1)
+        packets = (neighbors != receivers).sum().item()
+        byte_width = self.agent.fc1.weight.element_size()
+        return {"comm_packets": packets,
+                "comm_payload_bytes": packets * self.args.hidden_dim * byte_width}

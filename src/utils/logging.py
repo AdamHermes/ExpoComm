@@ -1,7 +1,9 @@
 from collections import defaultdict
 import logging
 import numpy as np
-import wandb
+import json
+import time
+from pathlib import Path
 
 
 class Logger:
@@ -13,6 +15,8 @@ class Logger:
         self.use_hdf = False
 
         self.stats = defaultdict(lambda: [])
+        self.metric_path = None
+        self.started_at = time.monotonic()
 
     def setup_tb(self, directory_name):
         raise NotImplementedError("Deprecated")
@@ -22,7 +26,16 @@ class Logger:
 
     def log_stat(self, key, value, t):
         self.stats[key].append((t, value))
-        wandb.log({key: value, "timestep": t})
+        if self.metric_path:
+            record = dict(metric=key, value=float(value), step=int(t),
+                          elapsed_seconds=time.monotonic() - self.started_at)
+            with Path(self.metric_path).open("a", encoding="utf-8") as output:
+                output.write(json.dumps(record, allow_nan=False) + "\n")
+        # main initializes W&B only when requested. Offline tests require none.
+        import sys
+        wandb = sys.modules.get("wandb")
+        if wandb is not None and getattr(wandb, "run", None) is not None:
+            wandb.log({key: value, "timestep": t})
 
     def print_recent_stats(self):
         log_str = "Recent Stats | t_env: {:>10} | Episode: {:>8}\n".format(

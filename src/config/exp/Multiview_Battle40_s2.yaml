@@ -1,0 +1,7 @@
+exp_name: Multiview_Battle40
+run_name: Multiview_Battle40_s2
+seed: 2
+topk_neighbors: 7
+env_args:
+  map_size: 40
+  pretrained_ckpt: battle.pt

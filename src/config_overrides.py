@@ -37,6 +37,25 @@ def apply_packet_loss_cli_overrides(config, params):
     run_name_suffix = _pop_option(params, "--run-name-suffix")
     test_nepisode_value = _pop_option(params, "--test-nepisode")
     record_video_value = _pop_option(params, "--record-video")
+    seed_value = _pop_option(params, "--eval-seed")
+    result_path = _pop_option(params, "--eval-result-path")
+
+    if seed_value is not None:
+        try:
+            seed = int(seed_value)
+        except ValueError as exc:
+            raise ValueError("--eval-seed must be an integer in [0, 4294967295]") from exc
+        if not 0 <= seed <= 2**32 - 1:
+            raise ValueError("--eval-seed must be an integer in [0, 4294967295]")
+        config["seed"] = seed
+
+    if result_path is not None:
+        if not config.get("checkpoint_path"):
+            raise ValueError("Evaluation requires a nonempty checkpoint_path")
+        if config.get("runner") != "episode":
+            raise ValueError("Sweep result export currently requires runner: episode")
+        config["evaluate"] = True
+        config["eval_result_path"] = result_path
 
     if percent_value is not None:
         try:
@@ -84,4 +103,24 @@ def apply_packet_loss_cli_overrides(config, params):
             raise ValueError("--record-video must be either true or false")
         config["record_video"] = normalized == "true"
 
+    return config
+
+
+def apply_experiment_cli_overrides(config, params):
+    """Explicit training overrides; reject typos rather than silently ignoring."""
+    for option, key, minimum in (("--seed", "seed", 0), ("--t-max", "t_max", 1),
+                                 ("--batch-size", "batch_size", 1),
+                                 ("--buffer-size", "buffer_size", 1),
+                                 ("--test-interval", "test_interval", 1)):
+        value = _pop_option(params, option)
+        if value is not None:
+            number = int(value)
+            if number < minimum or (key == "seed" and number > 2**32 - 1):
+                raise ValueError(option + " outside supported range")
+            config[key] = number
+    mode = _pop_option(params, "--wandb-mode")
+    if mode is not None:
+        if mode not in ("online", "offline", "disabled"):
+            raise ValueError("--wandb-mode must be online, offline or disabled")
+        config["wandb_mode"] = mode
     return config

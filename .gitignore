@@ -255,3 +255,8 @@ src/config/exp/debug.yaml
 work_dirs/
 wandb/
 results/
+# Isolated multiview verification dependencies (not project source).
+tmp/multiview_deps/
+tmp/multiview_linux_deps/
+tmp/multiview_wheels/
+tmp/ic3net_source/
