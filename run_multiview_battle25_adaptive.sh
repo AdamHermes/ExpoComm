@@ -13,4 +13,4 @@ exec bash "${SLURM_SUBMIT_DIR:-$PWD}/run_reproduce_expocomm.sh" \
     iql_expocomm_mv_adaptive \
     MAgent_Battle \
     Multiview_Battle25_s0 \
-    --wandb-mode=disabled
+    --wandb-mode=online
