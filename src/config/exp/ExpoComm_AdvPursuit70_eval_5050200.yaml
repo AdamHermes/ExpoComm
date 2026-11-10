@@ -1,0 +1,24 @@
+# Recorded save path: archived W&B run 8vis0wl2, git commit 3359888.
+# checkpoint_path is relative to the repository root on the cluster.
+checkpoint_path: "work_dirs/ExpoComm_AdvPursuit70/iql_ExpoComm_one_peer_n7/ExpoComm_AdvPursuit70_s0/20261013_160829/models"
+load_step: 5050200
+
+evaluate: True
+render: False
+save_model: False
+save_replay: False
+record_video: False
+test_nepisode: 100
+test_greedy: True
+runner: "episode"
+batch_size_run: 1
+buffer_size: 1
+use_cuda: False
+
+exp_name: ExpoComm_AdvPursuit70_eval
+run_name: ExpoComm_AdvPursuit70_eval_5050200
+seed: 0
+
+env_args:
+  map_size: 70 # 61 learned agents and 122 pretrained preys.
+  pretrained_ckpt: "adv_pursuit.pt"

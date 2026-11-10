@@ -1,0 +1,45 @@
+# PACKET-LOSS SWEEP: REMAINING BATTLE AND ADVERSARIAL PURSUIT MAPS
+# Run these lines in BASH on the Linux Slurm cluster, from ~/ExpoComm.
+# These are one-peer models; n6/n7 must match the trained checkpoint.
+# Each line submits 5 jobs: loss 0%, 10%, 20%, 30%, 50%; 100 episodes/job.
+# The 5 active lines submit 25 jobs / 2,500 evaluation episodes in total.
+# Battle25 already has results and is skipped below.
+# No training is performed: every experiment below has evaluate: True.
+#
+# IMPORTANT: the current src/config_overrides.py does not parse --eval-seed.
+# Use only PACKET_LOSS_SEEDS="0" until that is fixed. Configs below use seed: 0.
+# Naming runs seed1..seed4 does NOT change the actual evaluation seed.
+# Verify checkpoint directories still exist on the cluster before submission.
+# Existing eval configs use /home/b/bach66/ExpoComm; new AdvPursuit60/70 configs
+# use repo-relative paths recovered from archived training logs (see below).
+#
+# Preparations:
+cd ~/ExpoComm
+mkdir -p slurm
+
+# BATTLE 25: ALREADY COMPLETED; retained for reference only.
+# PACKET_LOSS_SEEDS="0" PACKET_LOSS_TEST_EPISODES=100 bash run_packet_loss_sweep.sh iql_ExpoComm_one_peer_n6 MAgent_Battle ExpoComm_Battle25_eval_5009240 0 10 20 30 50
+
+# BATTLE 35: 42 red agents; checkpoint 5008875
+PACKET_LOSS_SEEDS="0" PACKET_LOSS_TEST_EPISODES=100 bash run_packet_loss_sweep.sh iql_ExpoComm_one_peer_n7 MAgent_Battle ExpoComm_Battle35_eval_5008875 0 10 20 30 50
+
+# BATTLE 40: 64 red agents; checkpoint 5008330
+PACKET_LOSS_SEEDS="0" PACKET_LOSS_TEST_EPISODES=100 bash run_packet_loss_sweep.sh iql_ExpoComm_one_peer_n7 MAgent_Battle ExpoComm_Battle40_eval_5008330 0 10 20 30 50
+
+# ADVERSARIAL PURSUIT 45: 25 learned agents; checkpoint 5050200
+PACKET_LOSS_SEEDS="0" PACKET_LOSS_TEST_EPISODES=100 bash run_packet_loss_sweep.sh iql_ExpoComm_one_peer_n6 MAgent_AdvPursuit ExpoComm_AdvPursuit45_eval_5050200 0 10 20 30 50
+
+# ADVERSARIAL PURSUIT 60: 45 learned agents; checkpoint 5050200
+PACKET_LOSS_SEEDS="0" PACKET_LOSS_TEST_EPISODES=100 bash run_packet_loss_sweep.sh iql_ExpoComm_one_peer_n7 MAgent_AdvPursuit ExpoComm_AdvPursuit60_eval_5050200 0 10 20 30 50
+
+# ADVERSARIAL PURSUIT 70: 61 learned agents; checkpoint 5050200
+PACKET_LOSS_SEEDS="0" PACKET_LOSS_TEST_EPISODES=100 bash run_packet_loss_sweep.sh iql_ExpoComm_one_peer_n7 MAgent_AdvPursuit ExpoComm_AdvPursuit70_eval_5050200 0 10 20 30 50
+
+# CHECKPOINT SOURCES FOR THE TWO ADDED EVAL CONFIGS
+# git commit 3359888:
+#   wandb_exports/ExpoComm_AdvPursuit60/lky5a2xa/config.json
+#   wandb_exports/ExpoComm_AdvPursuit60/lky5a2xa/files/output.log
+#   wandb_exports/ExpoComm_AdvPursuit70/8vis0wl2/config.json
+#   wandb_exports/ExpoComm_AdvPursuit70/8vis0wl2/files/output.log
+# Both logs explicitly record saving checkpoint models/5050200.
+# This proves the recorded paths, not their current availability on the cluster.

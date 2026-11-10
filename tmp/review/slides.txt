@@ -1,0 +1,720 @@
+ppt/slides/slide1.xml
+Exponential Topology-Enabled Scalable Communication in Multi-Agent Reinforcement Learning
+Group 33
+ 
+National University of Singapore
+CS4246/CS5446: Reinforcement Learning and Sequential Decision Making
+ 
+November 2026
+0
+1
+2
+3
+4
+5
+6
+7
+
+ppt/slides/slide2.xml
+Meet the Team
+01   
+[Full Name 1]
+02   
+[Full Name 2]
+03   
+[Full Name 3]
+04   
+[Full Name 4]
+05   
+[Full Name 5]
+06   
+[Full Name 6]
+2
+
+ppt/slides/slide3.xml
+Outline
+?
+Motivation
+The challenge of scalable communication
+↔
+ExpoComm Method
+Exponential topology and message memory
+✓
+Experiments
+Tasks, baselines, and evaluation
+↗
+Results & Discussions
+Reproduced findings and tests
+3
+
+ppt/slides/slide4.xml
+Motivation
+In a cooperative pursuit task, agents act on different pieces of the same scene.
+A
+B
+!
+A's local view
+B's local view
+Illustration: A/B are teammates; orange marks an opponent.
+LOCAL OBSERVATIONS
+Agent A
+Sees an opponent, but not teammate B.
+Agent B
+Cannot observe that opponent.
+Yet both must coordinate their actions.
+Communication helps agents share missing information—but how can it remain scalable?
+4
+
+ppt/slides/slide5.xml
+Communication bottleneck
+Communication must be both 
+affordable
+ and 
+fast across the whole team
+.
+All-to-all communication
+Local sparse communication
+Every agent talks to every peer
+Each agent talks to its next neighbor
+O
+(
+N
+2
+) links/step
+Information reaches any peer in 1 hop
+O
+(
+N
+) links/step
+A path may take 
+O
+(
+N
+) hops
+source
+destination
+schematic, 
+N
+ = 10
+The challenge: few links and fast global information flow.
+5
+
+ppt/slides/slide6.xml
+Exponential topology
+Agent 
+i
+ contacts 
+j
+ = (
+i
+ + 2
+k
+) mod 
+N
+; here 
+N
+ = 8 and 
+k
+ = 0, 1, 2.
+Static exponential
+One-peer exponential
+All three peers, every timestep
+One rotating peer per timestep
+0
+1
+2
+3
+4
+5
+6
+7
+t
+ = 0 
++1
+0
+1
+2
+3
+4
+5
+6
+7
+t
+ = 1 
++2
+0
+1
+2
+3
+4
+5
+6
+7
+t
+ = 2 
++4
+0
+1
+2
+3
+4
+5
+6
+7
+K
+ = 3  peers / step
+O
+(
+N
+ log 
+N
+) directed links
+K
+ = 1  peer / step
+O
+(
+N
+) directed links
+Highlighted arrows show agent 0 only; the same rule applies to every agent.
+One peer per step; different exponential peers over time.
+6
+
+ppt/slides/slide7.xml
+Fast global dissemination
+Track one message from agent 0 across the one-peer schedule (
+N
+ = 8).
+ROUND
+0
+1
+2
+3
+4
+5
+6
+7
+Initial
+Round 1
+Round 2
+Round 3
++1
++2
++4
+REACHED
+1/8
+2/8
+4/8
+8/8
+already informed
+newly informed
+All 8 agents are reached after 3 = log₂ 8 rounds, with 
+N
+ links per round.
+Only informative paths are drawn; the bound assumes retained, lossless messages (Li et al., 2025).
+7
+
+ppt/slides/slide8.xml
+Message memory and grounding
+Fast dissemination only helps if agents 
+retain
+ and 
+learn
+ useful messages.
+ONE-PEER EXECUTION AT AGENT 
+i
+o
+i
+t
+History RNN
+h
+i
+t
+Peer message
+m
+j
+t−1
+Message GRU
+m
+i
+t
+m
+i
+t−1
+Action head
+a
+i
+t
+send to
+next peer
+MESSAGE GROUNDING — TRAINING ONLY
+If the global state is available, predict it from each agent's message:    
+ŝ
+t
+ = 
+f
+φ
+(
+m
+i
+t
+).
+ℒ
+Aux
+ = ‖
+s
+t
+ − 
+ŝ
+t
+‖²₂            ℒ = ℒ
+TD
+ + α ℒ
+Aux
+No global state: use InfoNCE. The auxiliary head is removed at inference (Li et al., 2025, Fig. 3).
+8
+
+ppt/slides/slide9.xml
+Benchmarks
+Two large-scale benchmarks: 12 scenarios with 20 to 100 learning agents.
+MAgent
+Our team
+ vs. 
+pretrained opponents
+IMP
+Infrastructure Management Planning
+AdversarialPursuit
+N
+ = 25, 45, 61
+Battle
+N
+ = 20, 42, 64
+System failure risk
+1
+3
+N
+2
+⋯
+inspect
+repair
+do nothing
+Uncorrelated · Correlated · OWF
+N
+ = 50, 100    (OWF: offshore wind farm)
+Learner
+IDQN, individual rewards
+Grounding
+predict the global state 
+s
+t
+Learner
+QMIX, shared team reward
+Grounding
+contrastive InfoNCE loss
+Team combat games and a real-world-inspired maintenance task.
+9
+
+ppt/slides/slide10.xml
+Baselines and budgets
+Budget 
+K
+: peers each agent sends to per step. Two settings: 
+K
+ = 1 and 
+K
+ = ⌈log₂ 
+N
+⌉.
+METHOD
+WHO TALKS TO WHOM
+IDQN / QMIX
+no communication
+Base learners, no messages:
+IDQN (MAgent), QMIX (IMP)
+DGN+TarMAC
+position-based
+Talk to the 
+K
+ nearest agents.
+Needs positions: MAgent only
+CommFormer
+learned graph
+Learns a sparse graph (GNN).
+Dropped on IMP (over 40 GB GPU)
+ER
+random graph
+ExpoComm with random graphs.
+Only the topology differs.
+ExpoComm
+exponential (ours)
+K
+ = ⌈log₂ 
+N
+⌉: static exponential
+K
+ = 1: one-peer exponential
+LINKS PER STEP, 
+N
+ = 64
+All-to-all
+4032
+K
+ = ⌈log₂ 
+N
+⌉ = 6
+384
+K
+ = 1
+64
+Drawn to scale: both budgets
+use under 10% of all-to-all.
+ExpoComm vs. ER isolates the effect of the topology.
+10
+
+ppt/slides/slide11.xml
+Evaluation protocol
+Shared code and hyperparameters (except learning rate); 5 seeds, 95% CI.
+WHAT IS MEASURED
+WHAT IS TESTED
+ADVERSARIAL PURSUIT
+Evaluation return
+Reward per tag, penalty per miss
+BATTLE
+Win rate
+Team with more survivors wins
+IMP
+Normalized reward (%)
+(
+x
+ − 
+H
+)/|
+H
+| vs. an expert heuristic 
+H
+Performance
+12 scenarios, both budgets,
+against the baselines
+train
+test
+Zero-shot transfer
+Battle: train on 20–64 agents,
+test on up to 121, no retraining
+Msg memory
+Aux loss
+Ablation
+Remove the message memory,
+or the auxiliary loss
+Training: 5×10
+6
+ steps (MAgent), 2×10
+6
+ steps (IMP)
+Evaluated every 5×10
+4
+ / 2.5×10
+4
+ steps on 100 test episodes; under 2 days per run (RTX 3080 / A100).
+11
+
+ppt/slides/slide12.xml
+Reproduction scope
+We re-ran the authors' released code; one training seed per run.
+EXPERIMENT
+PAPER
+OUR RUNS
+STATUS
+MAgent learning curves
+Pursuit and Battle, 6 team sizes
+all methods, 5 seeds
+ExpoComm only
+partial
+IMP final scores
+3 scenarios × 2 sizes
+5 configurations, 5 seeds
+all 5 configurations
+done
+Zero-shot transfer
+Battle, 9 train→test pairs
+200 games per match-up
+same: 18,000 games
+done
+Learned behaviour
+Pursuit 61, Battle 64
+still snapshots
+replays + tag stats
+done
+Ablation
+no memory / no aux loss
+3 scenarios
+not run
+not run
+One seed per run: gaps of a few points can be noise.
+12
+
+ppt/slides/slide13.xml
+MAgent: learning curves
+━━ 
+ExpoComm K = 1          
+━━ 
+ExpoComm K = ⌈log₂ N⌉          
+◆ 
+paper's end value (approx.)
+K
+ = 1 matches or beats 
+K
+ = ⌈log₂ 
+N
+⌉ in 5 of 6 settings, with 5–6× fewer links.
+One seed per curve (paper: 5). Battle K = ⌈log₂ N⌉ curves are traced from our W&B plot export. Bold: 5-point moving average; faint: raw.
+13
+
+ppt/slides/slide14.xml
+Learned behaviour
+Final policies replayed: 
+our team
+, 
+opponents
+, black strokes = tag / attack.
+Pursuit, 61 agents
+ExpoComm 
+K
+ = ⌈log₂ 
+N
+⌉, seed 1
+TAG SUCCESS
+96.6%
+was 0.01% untrained
+TAG ACTIONS
+41%
+of decisions (was 99.5%)
+Prey get pinned to the wall.
+Battle, 64 vs. 64
+ExpoComm 
+K
+ = 1, seed 0
+WIN RATE
+1.00
+final evaluation
+SURVIVORS
+57.8
+ vs 
+1.1
+left of 64 per side
+Win the front line, then clear the rest.
+14
+
+ppt/slides/slide15.xml
+IMP: final scores
+Normalized reward (%). Large: ours, 1 seed. Small: paper, mean of 5 seeds.
+QMIX
+ER
+ExpoComm
+N
+SCENARIO
+K = 0
+K = 1
+K = ⌈log₂ N⌉
+K = 1
+K = ⌈log₂ N⌉
+50
+Uncorrelated
+24.9
+paper 26.4
+28.2
+paper 24.9
+31.5
+paper 26.6
+26.9
+paper 27.3
+28.6
+paper 28.3
+Correlated
+−28.0
+paper 24.8
+44.9
+paper 34.6
+44.0
+paper 34.8
+43.4
+paper 43.8
+47.9
+paper 40.0
+OWF
+63.1
+paper 62.5
+60.9
+paper 63.0
+64.9
+paper 61.7
+63.8
+paper 64.7
+65.0
+paper 65.2
+100
+Uncorrelated
+22.9
+paper 12.9
+22.3
+paper 21.9
+−699.1†
+paper 18.4
+19.0
+paper 27.3
+24.8
+paper 27.8
+Correlated
+34.2
+paper −40.2
+33.6
+paper −65.1
+23.1
+paper 9.8
+29.3
+paper 19.2
+34.8
+paper 17.3
+OWF
+64.7
+paper 65.5
+64.0
+paper 66.7
+66.7
+paper 65.9
+64.0
+paper 65.3
+66.3
+paper 66.2
+ExpoComm 
+K
+ = ⌈log₂ 
+N
+⌉: best in 4 of 6 scenarios, second in the rest.
+Dark shade = our best, light shade = our second. †Run collapsed in training (raw return −1850).
+15
+
+ppt/slides/slide16.xml
+Zero-shot transfer
+Battle: train on 
+N
+ agents, play on larger maps. Cell = match-ups won (of 4).
+20
+42
+64
+TRAINED ON
+TESTED ON
+TOTAL
+20
+42
+81
+121
+42
+81
+121
+81
+121
+ExpoComm
+K
+ = 1
+3
+1
+0
+0
+4
+3
+2
+1
+2
+16
+ExpoComm
+K
+ = ⌈log₂ 
+N
+⌉
+2
+3
+1
+1
+2
+1
+0
+1
+2
+13
+ER
+K
+ = 1
+1
+1
+2
+3
+1
+1
+2
+1
+1
+13
+ER
+K
+ = ⌈log₂ 
+N
+⌉
+2
+4
+2
+3
+2
+2
+1
+3
+3
+22
+IDQN
+no comm.
+2
+1
+2
+2
+1
+2
+2
+1
+0
+13
+Left side
+wins
+72%
+79%
+95%
+96%
+76%
+91%
+96%
+74%
+81%
+fair: 50%
+At training size, ExpoComm 
+K
+ = 1 wins the most match-ups.
+Trained on 20/42, tested on 81/121: the starting side wins 91–96% of games.
+16
+
+ppt/slides/slide17.xml
+Discussion
+How our single-seed reproduction compares with the paper's claims.
+✓
+Held up
+One peer (K = 1) matches or beats K = ⌈log₂ N⌉ in 5 of 6 MAgent runs.
+ExpoComm is top two in all 6 IMP scenarios.
+Same tactics as the paper: corner the prey, win the front line.
+~
+Differed
+Our K = ⌈log₂ N⌉ Pursuit runs reach 61–70 (paper: ≈25–50).
+IMP: K = 1 is never our best (paper: best on Correlated).
+Transfer: ER K = ⌈log₂ N⌉ wins 22 match-ups, ExpoComm 13.
+!
+Caveats
+One seed per run, so no confidence intervals.
+Large-map transfer is mostly decided by the starting side.
+Ablation, CommFormer and DGN+TarMAC not run.
+Core claim holds on MAgent; IMP and transfer gains are small at one seed.
+17
