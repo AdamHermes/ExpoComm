@@ -1,0 +1,51 @@
+{
+  "project": "adamhermes66-tr-ng-i-h-c-khoa-h-c-t-nhi-n-hqg-hcm/ExpoComm_Battle25_eval",
+  "name_prefix": "ExpoComm_Battle25_eval_5009240",
+  "run_ids": [
+    "5qjpsbak",
+    "5w4poptg",
+    "7y30l2np",
+    "akgrb6iz",
+    "rsfp8gqj",
+    "stgknioj",
+    "9l7z924z",
+    "aswoimdu",
+    "c4m7r2k8",
+    "rrfntn2i",
+    "rsd4otux",
+    "tb18bx24",
+    "cba0j2dk",
+    "cy0zf1r6",
+    "fpclj9ev",
+    "hru8lggz",
+    "pxq61862",
+    "wvow95he",
+    "8vha2ec1",
+    "mbp18t5h",
+    "orrrdvyu",
+    "r0m4k8hg",
+    "xqf0pxvx",
+    "4e3kfl7w",
+    "7sfh1nfq",
+    "dbosujdl",
+    "vcwickd7",
+    "ziv9a3mg"
+  ],
+  "created_after": "2026-11-03T00:00:00+07:00",
+  "created_before": "2026-11-04T00:00:00+07:00",
+  "loss_rates": [
+    0,
+    10,
+    20,
+    30,
+    50
+  ],
+  "expected_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "exported_at": "2026-11-10T04:11:09.575627+00:00"
+}

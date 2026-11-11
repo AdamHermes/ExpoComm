@@ -1,0 +1,37 @@
+﻿map,agents,loss_percent,metric,value,actual_seed,episodes,checkpoint_step,representative_run_id,logged_runs
+AdvPursuit45,25,0,Evaluation Return,87.37520130199192,0,100,5050200,419t0cnj,1
+AdvPursuit45,25,10,Evaluation Return,87.23760129994156,0,100,5050200,of8pfpw7,1
+AdvPursuit45,25,20,Evaluation Return,87.08232129762773,0,100,5050200,ju5y3inb,1
+AdvPursuit45,25,30,Evaluation Return,85.75552127785686,0,100,5050200,u59pfnkn,1
+AdvPursuit45,25,50,Evaluation Return,85.13720126864317,0,100,5050200,j8ihy7e8,1
+AdvPursuit45,25,100,Evaluation Return,83.00040123680232,0,100,5050200,2z4bjax7,1
+AdvPursuit60,45,0,Evaluation Return,73.80573443312447,0,100,5050200,tgh7u3xl,1
+AdvPursuit60,45,10,Evaluation Return,76.4236900276906,0,100,5050200,uz92kljc,1
+AdvPursuit60,45,20,Evaluation Return,75.21582334302533,0,100,5050200,cb1n6boi,1
+AdvPursuit60,45,30,Evaluation Return,74.92266778310142,0,100,5050200,7b3kd4vz,1
+AdvPursuit60,45,50,Evaluation Return,76.03271224408681,0,100,5050200,gcx1kym9,1
+AdvPursuit60,45,100,Evaluation Return,75.55249001470872,0,100,5050200,9g5s5pba,1
+AdvPursuit70,61,0,Evaluation Return,65.87495180128539,0,100,5050200,zqb5qs2s,1
+AdvPursuit70,61,10,Evaluation Return,66.48983705634953,0,100,5050200,0cuab3sj,1
+AdvPursuit70,61,20,Evaluation Return,65.35564031813719,0,100,5050200,267sqzky,1
+AdvPursuit70,61,30,Evaluation Return,66.51137804027708,0,100,5050200,yexjce80,1
+AdvPursuit70,61,50,Evaluation Return,65.69744360191899,0,100,5050200,l7tmkz1q,1
+AdvPursuit70,61,100,Evaluation Return,68.56341085773997,0,100,5050200,oahdycd1,1
+Battle25,20,0,Evaluation Win Rate,1,0,100,5009240,5qjpsbak,6
+Battle25,20,10,Evaluation Win Rate,0.91,0,100,5009240,9l7z924z,6
+Battle25,20,20,Evaluation Win Rate,0.92,0,100,5009240,cba0j2dk,6
+Battle25,20,30,Evaluation Win Rate,0.9,0,100,5009240,8vha2ec1,5
+Battle25,20,50,Evaluation Win Rate,0.67,0,100,5009240,4e3kfl7w,5
+Battle25,20,100,Evaluation Win Rate,0,0,100,5009240,hebf969n,1
+Battle35,42,0,Evaluation Win Rate,0.89,0,100,5008875,t0lhc0hl,1
+Battle35,42,10,Evaluation Win Rate,0.86,0,100,5008875,406r7xtk,1
+Battle35,42,20,Evaluation Win Rate,0.79,0,100,5008875,diwlze1n,1
+Battle35,42,30,Evaluation Win Rate,0.71,0,100,5008875,cxes15gp,1
+Battle35,42,50,Evaluation Win Rate,0.48,0,100,5008875,3hhfde6c,1
+Battle35,42,100,Evaluation Win Rate,0,0,100,5008875,aybnucsc,1
+Battle40,64,0,Evaluation Win Rate,1,0,100,5008330,h1x04tjo,1
+Battle40,64,10,Evaluation Win Rate,1,0,100,5008330,xd6afzoi,1
+Battle40,64,20,Evaluation Win Rate,1,0,100,5008330,zz6s5jzc,1
+Battle40,64,30,Evaluation Win Rate,1,0,100,5008330,w5wfqjdi,1
+Battle40,64,50,Evaluation Win Rate,0.98,0,100,5008330,dgnxkevb,1
+Battle40,64,100,Evaluation Win Rate,1,0,100,5008330,w25e9o1d,1

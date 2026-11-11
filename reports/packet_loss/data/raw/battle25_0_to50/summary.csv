@@ -1,0 +1,6 @@
+﻿loss_percent,n_runs,n_unique_actual_seeds,actual_seeds,status,win_rate_percent_mean,win_rate_percent_seed_std,return_mean,return_seed_std,return_episode_std_mean,return_episode_std_seed_std,red_team_alives_mean,red_team_alives_seed_std,episode_length_mean,episode_length_seed_std
+0,6,1,0,actual seeds differ from expected seeds; duplicate actual seed; narrow selection to one sweep; run config/metrics issues; inspect runs.csv,100,,4.734269974971184,,0.4045179578281735,,17.22,,100.72,
+10,6,1,0,actual seeds differ from expected seeds; duplicate actual seed; narrow selection to one sweep; run config/metrics issues; inspect runs.csv,91.0,,3.728937468813734,,1.1636522362183233,,15.22,,148.69,
+20,6,1,0,actual seeds differ from expected seeds; duplicate actual seed; narrow selection to one sweep; run config/metrics issues; inspect runs.csv,92.0,,3.792964967849197,,1.213063101596222,,15.22,,141.44,
+30,5,1,0,actual seeds differ from expected seeds; duplicate actual seed; narrow selection to one sweep; run config/metrics issues; inspect runs.csv,90.0,,3.5614349717493137,,1.334019740980868,,14.75,,153.53,
+50,5,1,0,actual seeds differ from expected seeds; duplicate actual seed; narrow selection to one sweep; run config/metrics issues; inspect runs.csv,67.0,,2.577727468483616,,1.7388846389717925,,10.2,,167.92,

@@ -1,0 +1,25 @@
+Loss 0%: actual seeds differ from expected seeds; duplicate actual seed; narrow selection to one sweep; run config/metrics issues; inspect runs.csv
+Loss 10%: actual seeds differ from expected seeds; duplicate actual seed; narrow selection to one sweep; run config/metrics issues; inspect runs.csv
+Loss 20%: actual seeds differ from expected seeds; duplicate actual seed; narrow selection to one sweep; run config/metrics issues; inspect runs.csv
+Loss 30%: actual seeds differ from expected seeds; duplicate actual seed; narrow selection to one sweep; run config/metrics issues; inspect runs.csv
+Loss 50%: actual seeds differ from expected seeds; duplicate actual seed; narrow selection to one sweep; run config/metrics issues; inspect runs.csv
+5qjpsbak: name says seed=3, config says seed=0
+5w4poptg: name says seed=2, config says seed=0
+akgrb6iz: name says seed=1, config says seed=0
+rsfp8gqj: name says seed=4, config says seed=0
+9l7z924z: name says seed=1, config says seed=0
+c4m7r2k8: name says seed=3, config says seed=0
+rrfntn2i: name says seed=2, config says seed=0
+tb18bx24: name says seed=4, config says seed=0
+cy0zf1r6: name says seed=2, config says seed=0
+fpclj9ev: name says seed=3, config says seed=0
+hru8lggz: name says seed=1, config says seed=0
+wvow95he: name says seed=4, config says seed=0
+8vha2ec1: name says seed=3, config says seed=0
+mbp18t5h: name says seed=2, config says seed=0
+orrrdvyu: name says seed=1, config says seed=0
+xqf0pxvx: name says seed=4, config says seed=0
+4e3kfl7w: name says seed=1, config says seed=0
+dbosujdl: name says seed=2, config says seed=0
+vcwickd7: name says seed=3, config says seed=0
+ziv9a3mg: name says seed=4, config says seed=0

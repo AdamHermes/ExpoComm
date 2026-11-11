@@ -1,0 +1,130 @@
+{
+  "channel": [
+    {
+      "agents": 20,
+      "topk": 6,
+      "loss100_remote_keeps": 0,
+      "altered_remote_observations_change_q_at100": false,
+      "positive_control_max_q_difference_at0": 0.0016285479068756104,
+      "initial_hidden_and_message_zero": true
+    },
+    {
+      "agents": 42,
+      "topk": 7,
+      "loss100_remote_keeps": 0,
+      "altered_remote_observations_change_q_at100": false,
+      "positive_control_max_q_difference_at0": 0.0015985071659088135,
+      "initial_hidden_and_message_zero": true
+    },
+    {
+      "agents": 64,
+      "topk": 7,
+      "loss100_remote_keeps": 0,
+      "altered_remote_observations_change_q_at100": false,
+      "positive_control_max_q_difference_at0": 0.001358628273010254,
+      "initial_hidden_and_message_zero": true
+    },
+    {
+      "agents": 25,
+      "topk": 6,
+      "loss100_remote_keeps": 0,
+      "altered_remote_observations_change_q_at100": false,
+      "positive_control_max_q_difference_at0": 0.0015443861484527588,
+      "initial_hidden_and_message_zero": true
+    },
+    {
+      "agents": 45,
+      "topk": 7,
+      "loss100_remote_keeps": 0,
+      "altered_remote_observations_change_q_at100": false,
+      "positive_control_max_q_difference_at0": 0.0016552507877349854,
+      "initial_hidden_and_message_zero": true
+    },
+    {
+      "agents": 61,
+      "topk": 7,
+      "loss100_remote_keeps": 0,
+      "altered_remote_observations_change_q_at100": false,
+      "positive_control_max_q_difference_at0": 0.0014751553535461426,
+      "initial_hidden_and_message_zero": true
+    }
+  ],
+  "battle_reset_and_formation": [
+    {
+      "map_size": 25,
+      "team_size": 20,
+      "formation_columns": 4,
+      "formation_rows": 5,
+      "left_team_ids_under_double_reset": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "left_team_ids_under_single_reset": [
+        1,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "map_size": 35,
+      "team_size": 42,
+      "formation_columns": 6,
+      "formation_rows": 7,
+      "left_team_ids_under_double_reset": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "left_team_ids_under_single_reset": [
+        1,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "map_size": 40,
+      "team_size": 64,
+      "formation_columns": 8,
+      "formation_rows": 8,
+      "left_team_ids_under_double_reset": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "left_team_ids_under_single_reset": [
+        1,
+        0,
+        1,
+        0
+      ]
+    }
+  ],
+  "survivor_count_logic": {
+    "synthetic_true_survivors": {
+      "red": 1,
+      "blue": 2
+    },
+    "wrapper_reported": {
+      "red": 3,
+      "blue": 2
+    },
+    "wrapper_reported_red_win": true,
+    "true_red_win": false,
+    "scope": "Synthetic reproduction of counting dictionary membership, not a measurement of the W&B episodes"
+  },
+  "cli": {
+    "requested_eval_seed": 4,
+    "effective_config_seed": 0,
+    "ignored_options": [
+      "--eval-seed=4",
+      "--eval-result-path=probe.json"
+    ],
+    "percent_and_test_mode_applied": true
+  }
+}

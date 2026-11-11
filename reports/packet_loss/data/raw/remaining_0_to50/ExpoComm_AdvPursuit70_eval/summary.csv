@@ -1,0 +1,6 @@
+﻿loss_percent,n_runs,n_unique_actual_seeds,actual_seeds,status,win_rate_percent_mean,win_rate_percent_seed_std,return_mean,return_seed_std,return_episode_std_mean,return_episode_std_seed_std,red_team_alives_mean,red_team_alives_seed_std,episode_length_mean,episode_length_seed_std
+0,1,1,0,ok,,,65.87495180128539,,6.859303908057117,,,,199,
+10,1,1,0,ok,,,66.48983705634953,,6.585696765248712,,,,199,
+20,1,1,0,ok,,,65.35564031813719,,6.548247470834563,,,,199,
+30,1,1,0,ok,,,66.51137804027708,,7.293097181874882,,,,199,
+50,1,1,0,ok,,,65.69744360191899,,6.694457707481905,,,,199,

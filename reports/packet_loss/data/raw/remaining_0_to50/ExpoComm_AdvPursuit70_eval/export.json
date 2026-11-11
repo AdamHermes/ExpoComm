@@ -1,0 +1,24 @@
+{
+  "project": "adamhermes66-tr-ng-i-h-c-khoa-h-c-t-nhi-n-hqg-hcm/ExpoComm_AdvPursuit70_eval",
+  "name_prefix": "ExpoComm_AdvPursuit70_eval_5050200",
+  "run_ids": [
+    "zqb5qs2s",
+    "0cuab3sj",
+    "267sqzky",
+    "yexjce80",
+    "l7tmkz1q"
+  ],
+  "created_after": null,
+  "created_before": null,
+  "loss_rates": [
+    0,
+    10,
+    20,
+    30,
+    50
+  ],
+  "expected_seeds": [
+    0
+  ],
+  "exported_at": "2026-11-10T07:16:50.157067+00:00"
+}

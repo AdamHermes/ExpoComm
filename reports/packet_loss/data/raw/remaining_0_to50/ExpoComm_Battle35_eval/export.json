@@ -1,0 +1,24 @@
+{
+  "project": "adamhermes66-tr-ng-i-h-c-khoa-h-c-t-nhi-n-hqg-hcm/ExpoComm_Battle35_eval",
+  "name_prefix": "ExpoComm_Battle35_eval_5008875",
+  "run_ids": [
+    "t0lhc0hl",
+    "406r7xtk",
+    "diwlze1n",
+    "cxes15gp",
+    "3hhfde6c"
+  ],
+  "created_after": null,
+  "created_before": null,
+  "loss_rates": [
+    0,
+    10,
+    20,
+    30,
+    50
+  ],
+  "expected_seeds": [
+    0
+  ],
+  "exported_at": "2026-11-10T07:16:12.783661+00:00"
+}
