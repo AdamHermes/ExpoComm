@@ -231,9 +231,19 @@ class QLearner:
                     map_location=lambda storage, loc: storage,
                 )
             )
-        self.optimiser.load_state_dict(
-            th.load("{}/opt.th".format(path), map_location=lambda storage, loc: storage)
-        )
+        # Evaluation and replay export only need the policy/Q-network weights.
+        # In particular, an old ExpoComm checkpoint can be evaluated with a
+        # newly attached message-imputer whose parameters did not exist in the
+        # checkpoint's optimiser state.  Loading opt.th in that case fails due
+        # to a parameter-group size mismatch and provides no evaluation value.
+        # Keep strict optimiser loading for an actual training resume.
+        if not (self.args.evaluate or self.args.save_replay):
+            self.optimiser.load_state_dict(
+                th.load(
+                    "{}/opt.th".format(path),
+                    map_location=lambda storage, loc: storage,
+                )
+            )
 
 
 class AuxQLearner(QLearner):
