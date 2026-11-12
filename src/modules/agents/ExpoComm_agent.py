@@ -6,6 +6,8 @@ import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
 
+from modules.communication import ResidualMessageImputer
+
 
 class ExpoCommSAgent(nn.Module):
     def __init__(self, input_shape, args):
@@ -68,14 +70,29 @@ class ExpoCommSAgent(nn.Module):
         ).view(*receiver_shape)
         return keep_mask | sender_indices.eq(receiver_indices)
 
-    def forward(self, inputs, hidden_info, topk_indices, test_mode=False):
+    def forward(
+        self,
+        inputs,
+        hidden_info,
+        topk_indices,
+        test_mode=False,
+        delivery_mask=None,
+        recovery_context=None,
+    ):
 
         hidden_state, msg = hidden_info
         h_in = hidden_state.reshape(-1, self.args.hidden_dim)
 
         x = F.relu(self.fc1(inputs))
         h = self.rnn(x, h_in)
-        msg = self._communicate(topk_indices, msg, h, test_mode=test_mode)
+        msg = self._communicate(
+            topk_indices,
+            msg,
+            h,
+            test_mode=test_mode,
+            delivery_mask=delivery_mask,
+            recovery_context=recovery_context,
+        )
 
         # detach msg for main loss, use aux loss for msg
         out = th.cat([h, msg], dim=-1)
@@ -87,10 +104,22 @@ class ExpoCommSAgent(nn.Module):
     def aux_forward(self, msg):
         return self.predict_net(msg)
 
-    def _communicate(self, topk_indices, other_msg, ego_h, test_mode=False):
+    def _communicate(
+        self,
+        topk_indices,
+        other_msg,
+        ego_h,
+        test_mode=False,
+        delivery_mask=None,
+        recovery_context=None,
+    ):
         bs, n_agents, topk = topk_indices.shape
         assert n_agents == self.n_agents
-        keep_mask = self._packet_keep_mask(topk_indices, test_mode)
+        keep_mask = (
+            self._packet_keep_mask(topk_indices, test_mode)
+            if delivery_mask is None
+            else delivery_mask
+        )
         # (bs, n_agents, topk, hidden_dim)
         topk_indices = topk_indices[:, :, :, None].expand(
             -1, -1, -1, self.args.hidden_dim
@@ -152,10 +181,35 @@ class ExpoCommOAgent(ExpoCommSAgent):
             nn.Linear(args.hidden_dim, self.state_dim),
         )
 
-    def _communicate(self, topk_indices, other_msg, ego_h, test_mode=False):
+        self.packet_loss_recovery = getattr(args, "packet_loss_recovery", "hold")
+        if self.packet_loss_recovery not in {"hold", "mse_imputer"}:
+            raise ValueError(
+                "ExpoCommOAgent supports packet_loss_recovery 'hold' or "
+                f"'mse_imputer', got {self.packet_loss_recovery!r}"
+            )
+        if self.packet_loss_recovery == "mse_imputer":
+            self.message_imputer = ResidualMessageImputer(
+                hidden_dim=args.hidden_dim,
+                num_offsets=args.topk_neighbors,
+                imputer_hidden_dim=getattr(args, "packet_imputer_hidden_dim", 128),
+            )
+
+    def _communicate(
+        self,
+        topk_indices,
+        other_msg,
+        ego_h,
+        test_mode=False,
+        delivery_mask=None,
+        recovery_context=None,
+    ):
         bs, n_agents = topk_indices.shape
         assert n_agents == self.n_agents
-        keep_mask = self._packet_keep_mask(topk_indices, test_mode)
+        keep_mask = (
+            self._packet_keep_mask(topk_indices, test_mode)
+            if delivery_mask is None
+            else delivery_mask
+        )
         # (bs, n_agents, 1, hidden_dim)
         topk_indices = topk_indices[:, :, None, None].expand(
             -1, -1, -1, self.args.hidden_dim
@@ -173,15 +227,72 @@ class ExpoCommOAgent(ExpoCommSAgent):
 
         # (bs, n_agents, hidden_dim)
         ego_h = ego_h.reshape(bs, n_agents, -1)
-        msg_input = self.msg_processor(th.cat([ego_h, msg_received], dim=-1))
+        remote_input = msg_received
+        use_imputer = (
+            self.packet_loss_recovery == "mse_imputer"
+            and recovery_context is not None
+        )
+        if use_imputer:
+            cached_msg = recovery_context["cached_msg"]
+            cache_usable = recovery_context["cache_usable"]
+            normalized_age = recovery_context["normalized_age"]
+            offset_index = recovery_context["offset_index"]
+            imputed_msg = self.message_imputer(
+                ego_h,
+                msg_ego.reshape(bs, n_agents, -1),
+                cached_msg,
+                normalized_age,
+                offset_index,
+            )
+
+            # For a lost message with no usable cache, self-update is the
+            # conservative fallback.  A true sender message is never read in
+            # either loss branch after `remote_input` is selected.
+            fallback_input = msg_ego.reshape(bs, n_agents, -1)
+            remote_input = th.where(
+                keep_mask.unsqueeze(-1),
+                msg_received,
+                th.where(cache_usable.unsqueeze(-1), imputed_msg, fallback_input),
+            )
+
+        msg_input = self.msg_processor(th.cat([ego_h, remote_input], dim=-1))
 
         msg_input = msg_input.reshape(bs * n_agents, -1)
 
         candidate_msg = self.msg_rnn(msg_input, msg_ego)
         keep_mask = keep_mask.reshape(bs * n_agents, 1)
-        m_aggregated = th.where(keep_mask, candidate_msg, msg_ego)
+        if use_imputer:
+            # Clean links keep the original transition.  Under loss, the
+            # selected imputed/self fallback input still advances msg_rnn.
+            m_aggregated = candidate_msg
+        else:
+            m_aggregated = th.where(keep_mask, candidate_msg, msg_ego)
 
         return m_aggregated.reshape(bs * n_agents, -1)
+
+    def load_state_dict(self, state_dict, strict=True):
+        """Load legacy ExpoComm checkpoints into an opt-in imputer agent.
+
+        Existing checkpoints do not contain the newly introduced imputer
+        parameters.  They are allowed to be missing only in mse_imputer mode;
+        every original ExpoComm parameter remains strict.
+        """
+        result = super().load_state_dict(state_dict, strict=False)
+        allowed_missing = (
+            ("message_imputer.",)
+            if self.packet_loss_recovery == "mse_imputer"
+            else ()
+        )
+        missing = [
+            key for key in result.missing_keys
+            if not key.startswith(allowed_missing)
+        ]
+        if strict and (missing or result.unexpected_keys):
+            raise RuntimeError(
+                "Incompatible ExpoComm checkpoint: "
+                f"missing={missing}, unexpected={result.unexpected_keys}"
+            )
+        return result
 
 
 class ExpoCommOContAgent(ExpoCommOAgent):

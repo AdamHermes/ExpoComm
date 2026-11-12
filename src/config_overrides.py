@@ -7,6 +7,7 @@ _PACKET_LOSS_MODES = {
     "test": (False, True),
     "both": (True, True),
 }
+_PACKET_LOSS_RECOVERY_MODES = {"hold", "mse_imputer"}
 _RUN_NAME_SUFFIX_RE = re.compile(r"^[A-Za-z0-9._-]+$")
 
 
@@ -37,6 +38,8 @@ def apply_packet_loss_cli_overrides(config, params):
     run_name_suffix = _pop_option(params, "--run-name-suffix")
     test_nepisode_value = _pop_option(params, "--test-nepisode")
     record_video_value = _pop_option(params, "--record-video")
+    recovery_value = _pop_option(params, "--packet-loss-recovery")
+    cache_ttl_value = _pop_option(params, "--packet-cache-ttl")
 
     if percent_value is not None:
         try:
@@ -83,5 +86,23 @@ def apply_packet_loss_cli_overrides(config, params):
         if normalized not in {"true", "false"}:
             raise ValueError("--record-video must be either true or false")
         config["record_video"] = normalized == "true"
+
+    if recovery_value is not None:
+        if recovery_value not in _PACKET_LOSS_RECOVERY_MODES:
+            choices = ", ".join(sorted(_PACKET_LOSS_RECOVERY_MODES))
+            raise ValueError(
+                "--packet-loss-recovery must be one of "
+                f"{choices}, got {recovery_value}"
+            )
+        config["packet_loss_recovery"] = recovery_value
+
+    if cache_ttl_value is not None:
+        try:
+            cache_ttl = int(cache_ttl_value)
+        except ValueError as exc:
+            raise ValueError("--packet-cache-ttl must be a non-negative integer") from exc
+        if cache_ttl < 0:
+            raise ValueError("--packet-cache-ttl must be a non-negative integer")
+        config["packet_cache_ttl"] = cache_ttl
 
     return config

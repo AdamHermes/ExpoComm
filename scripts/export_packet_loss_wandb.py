@@ -75,9 +75,12 @@ def extract_run(run):
         if label == "episode_length" and value is None:
             value = summary.get("test_ep_length_mean")
         row[label] = value * scale if numeric(value) else None
-    if row["return"] is None or row["win_rate_percent"] is None:
-        problems.append("missing/non-finite reward or win-rate summary")
-    elif not 0 <= row["win_rate_percent"] <= 100:
+    if row["return"] is None:
+        problems.append("missing/non-finite reward summary")
+    is_pursuit = config.get("env") == "MAgent_AdvPursuit"
+    if row["win_rate_percent"] is None and not is_pursuit:
+        problems.append("missing/non-finite win-rate summary")
+    elif row["win_rate_percent"] is not None and not 0 <= row["win_rate_percent"] <= 100:
         problems.append("win rate is outside [0, 100]%")
     row["issues"] = "; ".join(problems)
     return row, dict(run_id=run.id, name=run.name, config=config, summary=summary)
@@ -202,6 +205,7 @@ def export(api, args):
     notes = ["", "SD describes variation BETWEEN actual evaluation seeds, not episode reward spread.",
              "Means with non-ok status are descriptive selected-run means only; seed SD is omitted.",
              "These are evaluations of one trained checkpoint, not independent training runs.",
+             "AdvPursuit does not log red-team win rate; n/a for that metric is expected.",
              "Raw per-episode outcomes were not logged by this code and cannot be recovered from summaries."]
     text = "\n".join(table + notes) + "\n"
     (directory / "table.md").write_text(text, encoding="utf-8")

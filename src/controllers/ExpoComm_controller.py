@@ -30,6 +30,15 @@ class ExpoCommMAC(BasicMAC):
             self.one_peer = args.one_peer
         else:
             self.one_peer = False
+        self.packet_loss_recovery = getattr(args, "packet_loss_recovery", "hold")
+        if self.packet_loss_recovery not in {"hold", "mse_imputer"}:
+            raise ValueError(
+                "ExpoCommMAC supports packet_loss_recovery 'hold' or "
+                f"'mse_imputer', got {self.packet_loss_recovery!r}"
+            )
+        if self.packet_loss_recovery == "mse_imputer" and not self.one_peer:
+            raise ValueError("mse_imputer currently supports one_peer ExpoComm only")
+        self.communication_recovery_state = None
 
     def init_hidden(self, batch_size):
 
@@ -37,6 +46,16 @@ class ExpoCommMAC(BasicMAC):
         h = h.unsqueeze(0).expand(batch_size, self.n_agents, -1)  # bav
         msg = msg.unsqueeze(0).expand(batch_size, self.n_agents, -1)
         self.hidden_states = (h, msg)
+        if self.packet_loss_recovery == "mse_imputer":
+            device = msg.device
+            hidden_dim = msg.size(-1)
+            self.communication_recovery_state = {
+                "cache": msg.new_zeros(batch_size, self.n_agents, self.n_agents, hidden_dim),
+                "age": th.zeros(batch_size, self.n_agents, self.n_agents, device=device, dtype=th.long),
+                "valid": th.zeros(batch_size, self.n_agents, self.n_agents, device=device, dtype=th.bool),
+            }
+        else:
+            self.communication_recovery_state = None
 
     def select_actions(self, ep_batch, t_ep, t_env, bs=slice(None), test_mode=False):
         # Only select actions foser the selected batch elements in bs
@@ -50,12 +69,22 @@ class ExpoCommMAC(BasicMAC):
     def forward(self, ep_batch, t, test_mode=False):
         agent_inputs, topk_indices = self._build_inputs(ep_batch, t)
         avail_actions = ep_batch["avail_actions"][:, t]
+        delivery_mask = None
+        recovery_context = None
+        previous_msg = self.hidden_states[1]
+        if self.packet_loss_recovery == "mse_imputer":
+            delivery_mask = self.agent._packet_keep_mask(topk_indices, test_mode)
+            recovery_context = self._build_imputer_context(topk_indices, t)
         agent_outs, self.hidden_states, msgs = self.agent(
             agent_inputs,
             self.hidden_states,
             topk_indices,
             test_mode=test_mode,
+            delivery_mask=delivery_mask,
+            recovery_context=recovery_context,
         )
+        if self.packet_loss_recovery == "mse_imputer":
+            self._update_message_cache(topk_indices, delivery_mask, previous_msg)
         states_predicted = self.agent.aux_forward(msgs)
 
         # Softmax the agent outputs if they're policy logits
@@ -73,6 +102,67 @@ class ExpoCommMAC(BasicMAC):
         return agent_outs.view(
             ep_batch.batch_size, self.n_agents, -1
         ), states_predicted.view(ep_batch.batch_size, self.n_agents, -1)
+
+    def _build_imputer_context(self, sender_indices, t):
+        state = self.communication_recovery_state
+        batch_size, n_agents = sender_indices.shape
+        hidden_dim = state["cache"].size(-1)
+        gather_index = sender_indices[:, :, None, None].expand(
+            -1, -1, 1, hidden_dim
+        )
+        cached_msg = state["cache"].gather(2, gather_index)[:, :, 0, :]
+        scalar_index = sender_indices[:, :, None]
+        cache_age = state["age"].gather(2, scalar_index)[:, :, 0]
+        cache_valid = state["valid"].gather(2, scalar_index)[:, :, 0]
+        ttl = int(getattr(self.args, "packet_cache_ttl", 8))
+        if ttl < 0:
+            raise ValueError("packet_cache_ttl must be non-negative")
+        cache_usable = cache_valid & (cache_age <= ttl)
+        denominator = max(ttl, 1)
+        normalized_age = cache_age.clamp(max=ttl + 1).to(cached_msg.dtype)
+        normalized_age = (normalized_age / denominator).unsqueeze(-1)
+        offset_index = th.full_like(sender_indices, t % self.args.topk_neighbors)
+        return {
+            "cached_msg": cached_msg,
+            "cache_usable": cache_usable,
+            "normalized_age": normalized_age,
+            "offset_index": offset_index,
+        }
+
+    def _update_message_cache(self, sender_indices, delivery_mask, previous_msg):
+        """Update only links genuinely delivered before this step's msg update."""
+        state = self.communication_recovery_state
+        batch_size, n_agents = sender_indices.shape
+        hidden_dim = previous_msg.size(-1)
+        receiver_indices = th.arange(n_agents, device=sender_indices.device)
+        receiver_indices = receiver_indices.unsqueeze(0).expand(batch_size, -1)
+        remote_link = sender_indices.ne(receiver_indices)
+        delivered_remote = delivery_mask & remote_link
+
+        source_index = sender_indices.unsqueeze(-1).expand(-1, -1, hidden_dim)
+        source_msg = previous_msg.gather(1, source_index)
+        cache_index = sender_indices[:, :, None, None].expand(-1, -1, 1, hidden_dim)
+        old_selected = state["cache"].gather(2, cache_index)[:, :, 0, :]
+        new_selected = th.where(
+            delivered_remote.unsqueeze(-1), source_msg, old_selected
+        )
+        state["cache"] = state["cache"].scatter(
+            2, cache_index, new_selected.unsqueeze(2)
+        )
+
+        valid_index = sender_indices.unsqueeze(-1)
+        old_valid = state["valid"].gather(2, valid_index)[:, :, 0]
+        new_valid = old_valid | delivered_remote
+        state["valid"] = state["valid"].scatter(
+            2, valid_index, new_valid.unsqueeze(-1)
+        )
+
+        incremented_age = th.where(state["valid"], state["age"] + 1, state["age"])
+        old_age = incremented_age.gather(2, valid_index)[:, :, 0]
+        new_age = th.where(delivered_remote, th.zeros_like(old_age), old_age)
+        state["age"] = incremented_age.scatter(
+            2, valid_index, new_age.unsqueeze(-1)
+        )
 
     def _build_inputs(self, batch, t):
         # Assumes homogenous agents with flat observations.
