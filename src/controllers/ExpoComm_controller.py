@@ -95,6 +95,10 @@ class ExpoCommMAC(BasicMAC):
         if self.packet_loss_recovery == "mse_imputer":
             delivery_mask = self.agent._packet_keep_mask(topk_indices, test_mode)
             recovery_context = self._build_imputer_context(topk_indices, t)
+            recovery_context["collect_value_importance"] = bool(
+                getattr(self.args, "imputer_value_aware", False)
+                and getattr(self.args, "imputer_collect_targets", False)
+            )
             if getattr(self.args, "imputer_collect_targets", False):
                 source_index = topk_indices.unsqueeze(-1).expand(
                     -1, -1, previous_msg.size(-1)
@@ -124,6 +128,22 @@ class ExpoCommMAC(BasicMAC):
                     "eligible": remote_loss & recovery_context["cache_usable"],
                     "cached_msg": recovery_context["cached_msg"].detach(),
                 }
+                if recovery_context["collect_value_importance"]:
+                    q_clean, q_cache = self.agent.last_counterfactual_q_values
+                    temperature = float(
+                        getattr(self.args, "imputer_value_temperature", 1.0)
+                    )
+                    if temperature <= 0:
+                        raise ValueError("imputer_value_temperature must be positive")
+                    clean_value = temperature * th.logsumexp(
+                        q_clean / temperature, dim=-1
+                    )
+                    cache_value = temperature * th.logsumexp(
+                        q_cache / temperature, dim=-1
+                    )
+                    self.last_imputer_training_data["value_importance"] = (
+                        clean_value - cache_value
+                    ).abs().detach()
         states_predicted = self.agent.aux_forward(msgs)
 
         # Softmax the agent outputs if they're policy logits

@@ -53,6 +53,10 @@ packet_imputer_hidden_dim: 128
 packet_imputer_checkpoint: "" # Optional trained imputer.th for evaluation
 imputer_collect_targets: False # Centralized target collection; training only
 imputer_lr: 0.001
+imputer_value_aware: False
+imputer_value_lambda: 1.0
+imputer_value_temperature: 1.0
+imputer_value_weight_clip: 4.0
 
 # --- Experiment running params ---
 repeat_id: 1

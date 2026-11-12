@@ -28,6 +28,13 @@ class MSEImputerLearner:
 
         self.params = list(self.mac.agent.message_imputer.parameters())
         self.optimiser = Adam(self.params, lr=args.imputer_lr)
+        self.value_aware = bool(getattr(args, "imputer_value_aware", False))
+        self.value_lambda = float(getattr(args, "imputer_value_lambda", 1.0))
+        self.value_weight_clip = float(
+            getattr(args, "imputer_value_weight_clip", 4.0)
+        )
+        if self.value_lambda < 0 or self.value_weight_clip < 1:
+            raise ValueError("invalid value-aware imputer weighting hyperparameters")
         self.log_stats_t = -args.learner_log_interval - 1
         self.training_steps = 0
 
@@ -35,7 +42,8 @@ class MSEImputerLearner:
         self.mac.init_hidden(batch.batch_size)
         self.optimiser.zero_grad()
 
-        total_loss = 0.0
+        mse_samples = []
+        importance_samples = []
         total_cache_mse = 0.0
         total_eligible = 0
         optimisation_steps = 0
@@ -58,9 +66,9 @@ class MSEImputerLearner:
                 cache_mse = F.mse_loss(
                     record["cached_msg"], record["target"], reduction="none"
                 ).mean(dim=-1)
-                loss_t = per_agent_mse[eligible].mean()
-                loss_t.backward()
-                total_loss += loss_t.item() * eligible_count
+                mse_samples.append(per_agent_mse[eligible])
+                if self.value_aware:
+                    importance_samples.append(record["value_importance"][eligible])
                 total_cache_mse += cache_mse[eligible].sum().item()
                 total_eligible += eligible_count
                 optimisation_steps += 1
@@ -75,17 +83,37 @@ class MSEImputerLearner:
                 "or batch size so a dropped remote packet follows a valid cache."
             )
 
+        mse = th.cat(mse_samples)
+        weights = th.ones_like(mse)
+        importance_mean = 0.0
+        if self.value_aware:
+            importance = th.cat(importance_samples)
+            importance_mean = importance.mean().item()
+            # Q-discrepancy is non-negative, unlike PPO advantage. Scale it
+            # by the batch mean, add a unit base weight, cap outliers, then
+            # normalize exactly as VA-MARO normalizes its batch weights.
+            relative_importance = importance / importance.mean().clamp_min(1e-8)
+            raw_weights = (1.0 + self.value_lambda * relative_importance).clamp(
+                max=self.value_weight_clip
+            )
+            weights = raw_weights / raw_weights.mean().detach()
+        loss = (weights * mse).mean()
+        loss.backward()
         grad_norm = th.nn.utils.clip_grad_norm_(self.params, self.args.grad_norm_clip)
         self.optimiser.step()
         self.training_steps += 1
 
         if t_env - self.log_stats_t >= self.args.learner_log_interval:
-            self.logger.log_stat("imputer_mse", total_loss / total_eligible, t_env)
+            self.logger.log_stat("imputer_mse", mse.mean().item(), t_env)
+            self.logger.log_stat("imputer_weighted_mse", loss.item(), t_env)
             self.logger.log_stat(
                 "imputer_cache_mse", total_cache_mse / total_eligible, t_env
             )
             self.logger.log_stat("imputer_eligible_count", total_eligible, t_env)
             self.logger.log_stat("imputer_grad_norm", grad_norm.item(), t_env)
+            if self.value_aware:
+                self.logger.log_stat("imputer_value_importance_mean", importance_mean, t_env)
+                self.logger.log_stat("imputer_value_weight_max", weights.max().item(), t_env)
             self.log_stats_t = t_env
 
     def cuda(self):

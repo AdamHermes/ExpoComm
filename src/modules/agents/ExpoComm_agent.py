@@ -247,6 +247,21 @@ class ExpoCommOAgent(ExpoCommSAgent):
             # Read by the dedicated offline imputer learner only. The
             # controller never uses this tensor to make an execution decision.
             self.last_imputed_remote_message = imputed_msg
+            self.last_counterfactual_q_values = None
+            if recovery_context.get("collect_value_importance", False):
+                # Centralized-training labels only: how much does this agent's
+                # action-value landscape change when its selected remote input
+                # is replaced by the cache? These values are detached and are
+                # never used to select an execution action.
+                with th.no_grad():
+                    ego_msg = msg_ego.reshape(bs, n_agents, -1)
+                    q_clean = self.counterfactual_q(
+                        ego_h, ego_msg, msg_received
+                    )
+                    q_cache = self.counterfactual_q(
+                        ego_h, ego_msg, cached_msg
+                    )
+                    self.last_counterfactual_q_values = (q_clean, q_cache)
 
             # For a lost message with no usable cache, self-update is the
             # conservative fallback.  A true sender message is never read in
@@ -272,6 +287,26 @@ class ExpoCommOAgent(ExpoCommSAgent):
             m_aggregated = th.where(keep_mask, candidate_msg, msg_ego)
 
         return m_aggregated.reshape(bs * n_agents, -1)
+
+    def counterfactual_q(self, ego_h, ego_msg, remote_input):
+        """Frozen Q output after substituting one candidate remote message.
+
+        Inputs have shape ``(B, N, H)`` and must be available to the receiver
+        at the current time. This helper is only called during centralized
+        imputer training to create a detached importance label.
+        """
+        bs, n_agents, hidden_dim = ego_h.shape
+        if n_agents != self.n_agents or hidden_dim != self.hidden_dim:
+            raise ValueError("unexpected counterfactual message shape")
+        msg_input = self.msg_processor(th.cat([ego_h, remote_input], dim=-1))
+        candidate_msg = self.msg_rnn(
+            msg_input.reshape(bs * n_agents, hidden_dim),
+            ego_msg.reshape(bs * n_agents, hidden_dim),
+        )
+        q = self.fc2(
+            th.cat([ego_h.reshape(bs * n_agents, hidden_dim), candidate_msg], dim=-1)
+        )
+        return q.reshape(bs, n_agents, -1)
 
     def load_state_dict(self, state_dict, strict=True):
         """Load legacy ExpoComm checkpoints into an opt-in imputer agent.
