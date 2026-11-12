@@ -4,7 +4,7 @@
 #SBATCH --time=08:00:00
 #SBATCH --cpus-per-task=4
 #SBATCH --gpus=1
-#SBATCH --mem=32G
+#SBATCH --mem=16G
 
 # Evaluate the one-peer residual message-imputer execution path.
 #
