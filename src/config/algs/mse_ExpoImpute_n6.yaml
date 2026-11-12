@@ -30,7 +30,10 @@ imputer_lr: 0.001
 # Small batches limit memory because every sample is a full MAgent episode.
 buffer_size: 64
 batch_size: 4
-t_max: 100000
+# run.py restores runner.t_env to the loaded RL checkpoint step (5,009,240),
+# so t_max is an absolute limit rather than an additional-step budget.
+# This trains the imputer for approximately 100k new environment steps.
+t_max: 5109240
 save_model: True
 save_model_interval: 20000
 test_interval: 1000000000

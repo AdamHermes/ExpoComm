@@ -105,3 +105,9 @@ the residual MLP head is initialized to zero. The MSE checkpoint above is the
 first learned-predictor comparison. The later Value-Aware method must use the
 same architecture, cache TTL, rollout distribution, number of updates, and
 evaluation protocol, changing only the per-example MSE weights.
+
+`run.py` restores `runner.t_env` to the source checkpoint step. Therefore this
+Battle25 config uses `t_max: 5109240`, an absolute limit that corresponds to
+approximately 100k additional imputer-training environment steps after the
+5,009,240 source checkpoint. Do not lower it to `100000`, or the training loop
+will terminate immediately.
