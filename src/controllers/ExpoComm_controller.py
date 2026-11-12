@@ -71,7 +71,12 @@ class ExpoCommMAC(BasicMAC):
         avail_actions = ep_batch["avail_actions"][:, t]
         delivery_mask = None
         recovery_context = None
-        previous_msg = self.hidden_states[1]
+        # ExpoCommAgent returns recurrent states flattened as (B * N, H),
+        # whereas the receiver--sender cache is indexed as (B, N, N, H).
+        # Restore the agent axis before selecting each sender's old message.
+        previous_msg = self.hidden_states[1].reshape(
+            ep_batch.batch_size, self.n_agents, -1
+        )
         if self.packet_loss_recovery == "mse_imputer":
             delivery_mask = self.agent._packet_keep_mask(topk_indices, test_mode)
             recovery_context = self._build_imputer_context(topk_indices, t)
