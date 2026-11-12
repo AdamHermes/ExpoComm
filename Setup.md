@@ -206,6 +206,54 @@ Valid modes are `off`, `train`, `test`, and `both`. Self-links are never
 dropped. `packet_loss_percent` is a probability parameter, so the realized
 fraction in a finite run approaches but need not equal the requested value.
 
+## 7. Export existing packet-loss results from W&B
+
+`run_packet_loss_sweep.sh` submits ordinary W&B runs; it does not create a native
+W&B Sweep. `src/main.py` uses `exp_name` as the project, stores the full config,
+and names each run `<run_name>-<algorithm>-<timestamp>`. The logger sends scalar
+metrics through `wandb.log`. Download existing runs without rerunning evaluation:
+
+```bash
+python -m pip install wandb
+wandb login
+python scripts/export_packet_loss_wandb.py \
+  --project YOUR_ENTITY/ExpoComm_Battle25_eval \
+  --created-after 2026-11-03T00:00:00+07:00 \
+  --created-before 2026-11-04T00:00:00+07:00 \
+  --out results/battle25_packet_loss_export
+```
+
+Replace `YOUR_ENTITY` with the username or team in the W&B project URL. Set the
+date range to your sweep (inclusive start, exclusive end). If there are multiple
+sweeps on that date, narrow the time range or use `--run-ids ID1 ID2 ...` to select
+exact W&B run IDs. `--name-prefix` defaults to `ExpoComm_Battle25_eval_5009240`;
+change it for other experiments. Default loss rates are `0 10 20 30 50` and expected
+actual seeds are `0 1 2 3 4`; override with `--loss-rates` / `--expected-seeds`.
+Only finished runs matching the name prefix and selection are downloaded.
+
+The output directory must be new or empty. It contains:
+
+- `runs/<RUN_ID>.json`: full logged config and summary per run.
+- `runs.csv`: per-run metrics, actual config seed, seed in the name, and issues.
+- `summary.csv`: selected-run means by loss, independent-seed sample SD when valid,
+  run/seed counts, and validation status. Win rates are expressed in percent.
+- `table.md`: reward/win-rate comparison table for copying into a report.
+- `warnings.txt`: missing rates/seeds, duplicate actual seeds, or invalid configs.
+- `export.json`: selected run IDs and export filters for traceability.
+
+Use `--history` to also download unsampled logged history to JSONL per run.
+This history contains logged aggregate metrics, not unlogged per-episode outcomes.
+The exporter reads W&B data only; it never creates or updates remote runs.
+Summary values are taken directly from `run.summary`, not estimated from charts.
+
+Check `status` and `warnings.txt` before interpreting the table. Seed numbers in
+run names are not proof that different seeds were applied: config.seed is used as
+the actual recorded seed. If names and configs disagree, or multiple runs use the
+same actual seed, the exporter flags this and omits seed SD. Descriptive means
+remain available for incomplete selections, but mixed checkpoint/environment/
+episode configurations are not averaged. Repeating an evaluation does not create
+independent training seeds.
+
 ## Troubleshooting
 
 - **`conda: command not found`:** set `CONDA_BASE` to the Miniconda or Anaconda
