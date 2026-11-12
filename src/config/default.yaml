@@ -47,6 +47,12 @@ obs_last_action: True # Include the agent's last action (one_hot) in the observa
 packet_loss_percent: 0.0 # Whole-message loss probability, expressed as percent
 packet_loss_train: False # Apply packet loss during rollout and replay training
 packet_loss_test: False # Apply packet loss during evaluation
+packet_loss_recovery: "hold" # hold | mse_imputer; default preserves original ExpoComm
+packet_cache_ttl: 8 # Maximum age of a valid remote-message cache entry
+packet_imputer_hidden_dim: 128
+packet_imputer_checkpoint: "" # Optional trained imputer.th for evaluation
+imputer_collect_targets: False # Centralized target collection; training only
+imputer_lr: 0.001
 
 # --- Experiment running params ---
 repeat_id: 1

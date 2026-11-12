@@ -40,6 +40,7 @@ def apply_packet_loss_cli_overrides(config, params):
     record_video_value = _pop_option(params, "--record-video")
     recovery_value = _pop_option(params, "--packet-loss-recovery")
     cache_ttl_value = _pop_option(params, "--packet-cache-ttl")
+    imputer_checkpoint_value = _pop_option(params, "--packet-imputer-checkpoint")
 
     if percent_value is not None:
         try:
@@ -104,5 +105,8 @@ def apply_packet_loss_cli_overrides(config, params):
         if cache_ttl < 0:
             raise ValueError("--packet-cache-ttl must be a non-negative integer")
         config["packet_cache_ttl"] = cache_ttl
+
+    if imputer_checkpoint_value is not None:
+        config["packet_imputer_checkpoint"] = imputer_checkpoint_value
 
     return config

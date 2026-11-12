@@ -6,6 +6,7 @@ from .actor_critic_pac_learner import PACActorCriticLearner
 from .actor_critic_pac_dcg_learner import PACDCGLearner
 from .maddpg_learner import MADDPGLearner
 from .ppo_learner import PPOLearner
+from .mse_imputer_learner import MSEImputerLearner
 
 REGISTRY = {}
 
@@ -19,3 +20,4 @@ REGISTRY["maddpg_learner"] = MADDPGLearner
 REGISTRY["ppo_learner"] = PPOLearner
 REGISTRY["pac_learner"] = PACActorCriticLearner
 REGISTRY["pac_dcg_learner"] = PACDCGLearner
+REGISTRY["mse_imputer_learner"] = MSEImputerLearner

@@ -24,6 +24,7 @@
 #   PACKET_LOSS_TEST_EPISODES=100  (default 100)
 #   CONDA_ENV=ExpoComm_test
 #   CONDA_SH=/path/to/conda.sh
+#   PACKET_IMPUTER_CHECKPOINT=/absolute/path/to/imputer.th
 #
 # Important: until an imputer checkpoint has been MSE-trained and saved, this
 # runs the zero-residual imputer. It is an execution/cache smoke test, not a
@@ -70,6 +71,15 @@ echo "Experiment: ${EXPERIMENT}"
 echo "Loss: ${LOSS_PERCENT}% | TTL: ${CACHE_TTL} | Episodes: ${TEST_NEPISODE}"
 echo "Recovery: mse_imputer"
 
+EXTRA_IMPUTER_ARG=()
+if [[ -n "${PACKET_IMPUTER_CHECKPOINT:-}" ]]; then
+    if [[ ! -f "${PACKET_IMPUTER_CHECKPOINT}" ]]; then
+        echo "ERROR: PACKET_IMPUTER_CHECKPOINT does not exist: ${PACKET_IMPUTER_CHECKPOINT}" >&2
+        exit 2
+    fi
+    EXTRA_IMPUTER_ARG=("--packet-imputer-checkpoint=${PACKET_IMPUTER_CHECKPOINT}")
+fi
+
 exec bash "${REPO_DIR}/run_reproduce_expocomm.sh" \
     "${ALGORITHM}" \
     "${ENVIRONMENT}" \
@@ -80,4 +90,5 @@ exec bash "${REPO_DIR}/run_reproduce_expocomm.sh" \
     "--packet-cache-ttl=${CACHE_TTL}" \
     "--run-name-suffix=mse_imputer_loss${LOSS_PERCENT}_ttl${CACHE_TTL}" \
     "--test-nepisode=${TEST_NEPISODE}" \
-    --record-video=false
+    --record-video=false \
+    "${EXTRA_IMPUTER_ARG[@]}"

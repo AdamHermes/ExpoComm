@@ -39,6 +39,7 @@ class ExpoCommMAC(BasicMAC):
         if self.packet_loss_recovery == "mse_imputer" and not self.one_peer:
             raise ValueError("mse_imputer currently supports one_peer ExpoComm only")
         self.communication_recovery_state = None
+        self.last_imputer_training_data = None
 
     def init_hidden(self, batch_size):
 
@@ -56,6 +57,20 @@ class ExpoCommMAC(BasicMAC):
             }
         else:
             self.communication_recovery_state = None
+        self.last_imputer_training_data = None
+
+    def load_models(self, path):
+        super().load_models(path)
+        imputer_path = getattr(self.args, "packet_imputer_checkpoint", "")
+        if not imputer_path:
+            return
+        if self.packet_loss_recovery != "mse_imputer":
+            raise ValueError(
+                "packet_imputer_checkpoint requires packet_loss_recovery=mse_imputer"
+            )
+        payload = th.load(imputer_path, map_location=lambda storage, loc: storage)
+        state_dict = payload.get("message_imputer", payload)
+        self.agent.message_imputer.load_state_dict(state_dict)
 
     def select_actions(self, ep_batch, t_ep, t_env, bs=slice(None), test_mode=False):
         # Only select actions foser the selected batch elements in bs
@@ -80,6 +95,14 @@ class ExpoCommMAC(BasicMAC):
         if self.packet_loss_recovery == "mse_imputer":
             delivery_mask = self.agent._packet_keep_mask(topk_indices, test_mode)
             recovery_context = self._build_imputer_context(topk_indices, t)
+            if getattr(self.args, "imputer_collect_targets", False):
+                source_index = topk_indices.unsqueeze(-1).expand(
+                    -1, -1, previous_msg.size(-1)
+                )
+                # Centralized training target only. It is never requested in
+                # decentralized evaluation because imputer_collect_targets is
+                # false there.
+                imputer_target = previous_msg.gather(1, source_index).detach()
         agent_outs, self.hidden_states, msgs = self.agent(
             agent_inputs,
             self.hidden_states,
@@ -90,6 +113,17 @@ class ExpoCommMAC(BasicMAC):
         )
         if self.packet_loss_recovery == "mse_imputer":
             self._update_message_cache(topk_indices, delivery_mask, previous_msg)
+            if getattr(self.args, "imputer_collect_targets", False):
+                receiver_indices = th.arange(
+                    self.n_agents, device=topk_indices.device
+                ).unsqueeze(0).expand_as(topk_indices)
+                remote_loss = topk_indices.ne(receiver_indices) & ~delivery_mask
+                self.last_imputer_training_data = {
+                    "prediction": self.agent.last_imputed_remote_message,
+                    "target": imputer_target,
+                    "eligible": remote_loss & recovery_context["cache_usable"],
+                    "cached_msg": recovery_context["cached_msg"].detach(),
+                }
         states_predicted = self.agent.aux_forward(msgs)
 
         # Softmax the agent outputs if they're policy logits
@@ -167,6 +201,16 @@ class ExpoCommMAC(BasicMAC):
         new_age = th.where(delivered_remote, th.zeros_like(old_age), old_age)
         state["age"] = incremented_age.scatter(
             2, valid_index, new_age.unsqueeze(-1)
+        )
+
+    def detach_imputer_history(self):
+        """Truncate BPTT between steps for frozen-policy imputer training."""
+        if self.packet_loss_recovery != "mse_imputer":
+            return
+        h, msg = self.hidden_states
+        self.hidden_states = (h.detach(), msg.detach())
+        self.communication_recovery_state["cache"] = (
+            self.communication_recovery_state["cache"].detach()
         )
 
     def _build_inputs(self, batch, t):

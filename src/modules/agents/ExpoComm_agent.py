@@ -244,6 +244,9 @@ class ExpoCommOAgent(ExpoCommSAgent):
                 normalized_age,
                 offset_index,
             )
+            # Read by the dedicated offline imputer learner only. The
+            # controller never uses this tensor to make an execution decision.
+            self.last_imputed_remote_message = imputed_msg
 
             # For a lost message with no usable cache, self-update is the
             # conservative fallback.  A true sender message is never read in
