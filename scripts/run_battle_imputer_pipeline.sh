@@ -15,7 +15,9 @@ REPO_DIR="${SLURM_SUBMIT_DIR:-$(pwd)}"
 LOSS_PERCENT="${PIPELINE_LOSS_PERCENT:-70}"
 CACHE_TTL="${PIPELINE_CACHE_TTL:-8}"
 TEST_EPISODES="${PIPELINE_TEST_EPISODES:-100}"
-ALGORITHM="iql_ExpoComm_one_peer_n7"
+ALGORITHM="${PIPELINE_ALGORITHM:-iql_ExpoComm_one_peer_n7}"
+MSE_ALGORITHM="${MSE_ALGORITHM:-mse_ExpoImpute_n7}"
+VA_ALGORITHM="${VA_ALGORITHM:-va_ExpoImpute_n7}"
 ENVIRONMENT="MAgent_Battle"
 STAMP="$(date +%Y%m%d_%H%M%S)"
 RESULTS_DIR="${REPO_DIR}/results/imputer_pipelines/${MAP_LABEL}_${STAMP}"
@@ -52,8 +54,8 @@ printf '%s\n' \
 cp "src/config/exp/${EVAL_EXPERIMENT}.yaml" "${RESULTS_DIR}/eval_config.yaml"
 cp "src/config/exp/${MSE_EXPERIMENT}.yaml" "${RESULTS_DIR}/mse_train_config.yaml"
 cp "src/config/exp/${VA_EXPERIMENT}.yaml" "${RESULTS_DIR}/va_train_config.yaml"
-cp src/config/algs/mse_ExpoImpute_n7.yaml "${RESULTS_DIR}/mse_algorithm.yaml"
-cp src/config/algs/va_ExpoImpute_n7.yaml "${RESULTS_DIR}/va_algorithm.yaml"
+cp "src/config/algs/${MSE_ALGORITHM}.yaml" "${RESULTS_DIR}/mse_algorithm.yaml"
+cp "src/config/algs/${VA_ALGORITHM}.yaml" "${RESULTS_DIR}/va_algorithm.yaml"
 
 metric_from_log() {
     local metric="$1"
@@ -154,11 +156,11 @@ run_eval self_update_proxy_ttl0 mse_imputer 0 ""
 run_eval ttl_cache_ttl${CACHE_TTL} mse_imputer "${CACHE_TTL}" ""
 
 # 4: Plain MSE. Train from the same frozen source policy, then evaluate it.
-MSE_CHECKPOINT="$(train_imputer plain_mse mse_ExpoImpute_n7 "${MSE_EXPERIMENT}" "${MSE_ROOT}")"
+MSE_CHECKPOINT="$(train_imputer plain_mse "${MSE_ALGORITHM}" "${MSE_EXPERIMENT}" "${MSE_ROOT}")"
 run_eval plain_mse_imputer mse_imputer "${CACHE_TTL}" "${MSE_CHECKPOINT}"
 
 # 5: Value-aware MSE. Same data budget/config except weighting, then evaluate.
-VA_CHECKPOINT="$(train_imputer value_aware va_ExpoImpute_n7 "${VA_EXPERIMENT}" "${VA_ROOT}")"
+VA_CHECKPOINT="$(train_imputer value_aware "${VA_ALGORITHM}" "${VA_EXPERIMENT}" "${VA_ROOT}")"
 run_eval va_expoimpute mse_imputer "${CACHE_TTL}" "${VA_CHECKPOINT}"
 
 printf 'finished_at=%s\n' "$(date --iso-8601=seconds)" >> "${RESULTS_DIR}/manifest.txt"
