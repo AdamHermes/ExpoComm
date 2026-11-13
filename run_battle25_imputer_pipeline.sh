@@ -6,8 +6,10 @@
 #SBATCH --gpus=1
 #SBATCH --mem=64G
 
-# Sequential Battle25 study at 70% loss: hold, self-update proxy, TTL cache,
-# Plain-MSE imputer (train + eval), and VA-ExpoImpute (train + eval).
+# Sequential Battle25 study: hold, self-update proxy, TTL cache, Plain-MSE
+# imputer (train + eval), and VA-ExpoImpute (train + eval).  By default the
+# shared pipeline uses 70% loss; override PIPELINE_LOSS_PERCENT and
+# PIPELINE_TRAIN_LOSS_PERCENT for a matched-loss study.
 # Submit from ~/ExpoComm:
 #   sbatch run_battle25_imputer_pipeline.sh
 # Optional: PIPELINE_TEST_EPISODES=500 sbatch run_battle25_imputer_pipeline.sh

@@ -7,6 +7,7 @@
 #SBATCH --mem=64G
 
 # Sequential Battle35 study: hold, self-update proxy, cache, Plain-MSE, and VA.
+# The shared pipeline defaults to 70% loss; loss can be overridden at submit time.
 # Submit from ~/ExpoComm: sbatch run_battle35_imputer_pipeline.sh
 
 set -Eeuo pipefail
