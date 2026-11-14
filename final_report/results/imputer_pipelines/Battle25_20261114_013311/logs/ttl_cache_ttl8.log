@@ -1,0 +1,138 @@
+
+=== EVALUATING ttl_cache_ttl8 ===
+Command: python src/main.py --config=iql_ExpoComm_one_peer_n6 --env-config=MAgent_Battle --exp-config=ExpoComm_Battle25_eval_5009240 --packet-loss-percent=30 --packet-loss-mode=test --packet-loss-recovery=mse_imputer --run-name-suffix=Battle25_ttl_cache_ttl8_loss30_ttl8 --test-nepisode=100 --record-video=false --packet-cache-ttl=8 
+src/main.py:82: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
+  if isinstance(v, collections.Mapping):
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from /home/b/bach66/.netrc.
+wandb: Currently logged in as: adamhermes66 (adamhermes66-tr-ng-i-h-c-khoa-h-c-t-nhi-n-hqg-hcm) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run uo4t4pxr
+wandb: Tracking run with wandb version 0.24.2
+wandb: Run data is saved locally in /home/b/bach66/ExpoComm/wandb/run-20261114_013627-uo4t4pxr
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run ExpoComm_Battle25_eval_5009240_Battle25_ttl_cache_ttl8_loss30_ttl8-iql_ExpoComm_one_peer_n6-20261114_013626
+wandb: ⭐️ View project at https://wandb.ai/adamhermes66-tr-ng-i-h-c-khoa-h-c-t-nhi-n-hqg-hcm/ExpoComm_Battle25_eval
+wandb: 🚀 View run at https://wandb.ai/adamhermes66-tr-ng-i-h-c-khoa-h-c-t-nhi-n-hqg-hcm/ExpoComm_Battle25_eval/runs/uo4t4pxr
+2026-11-14 01:36:29,292 - ExpoComm_Battle25_eval - iql_ExpoComm_one_peer_n6 - ExpoComm_Battle25_eval_5009240_Battle25_ttl_cache_ttl8_loss30_ttl8 - INFO - Current directory: /home/b/bach66/ExpoComm.
+2026-11-14 01:36:29,293 - ExpoComm_Battle25_eval - iql_ExpoComm_one_peer_n6 - ExpoComm_Battle25_eval_5009240_Battle25_ttl_cache_ttl8_loss30_ttl8 - INFO - Experiment Parameters:
+2026-11-14 01:36:29,296 - ExpoComm_Battle25_eval - iql_ExpoComm_one_peer_n6 - ExpoComm_Battle25_eval_5009240_Battle25_ttl_cache_ttl8_loss30_ttl8 - INFO - 
+
+{   'action_selector': 'epsilon_greedy',
+    'add_value_last_step': True,
+    'agent': 'ExpoComm_one_peer',
+    'agent_output_type': 'q',
+    'aux_coef': 0.1,
+    'batch_size': 32,
+    'batch_size_run': 1,
+    'buffer_cpu_only': True,
+    'buffer_size': 1,
+    'checkpoint_path': '/home/b/bach66/ExpoComm/work_dirs/ExpoComm_Battle25/iql_ExpoComm_one_peer_n6/ExpoComm_Battle25_s0/20261012_220221/models',
+    'double_q': True,
+    'env': 'MAgent_Battle',
+    'env_args': {   'global_reward': False,
+                    'map_name': 'battle_view7',
+                    'map_size': 25,
+                    'max_cycles': 200,
+                    'minimap_mode': True,
+                    'pretrained_ckpt': 'battle.pt',
+                    'seed': 0},
+    'epsilon_anneal_time': 500000,
+    'epsilon_finish': 0.05,
+    'epsilon_start': 1.0,
+    'evaluate': True,
+    'evaluation_epsilon': 0.0,
+    'exp_name': 'ExpoComm_Battle25_eval',
+    'gamma': 0.99,
+    'grad_norm_clip': 10,
+    'hidden_dim': 64,
+    'hypergroup': None,
+    'imputer_collect_targets': False,
+    'imputer_lr': 0.001,
+    'imputer_value_aware': False,
+    'imputer_value_lambda': 1.0,
+    'imputer_value_temperature': 1.0,
+    'imputer_value_weight_clip': 4.0,
+    'label': 'default_label',
+    'learner': 'aux_q_learner',
+    'learner_log_interval': 10000,
+    'load_step': 5009240,
+    'local_results_path': 'results',
+    'log_interval': 50000,
+    'lr': 0.0005,
+    'mac': 'ExpoComm_mac',
+    'mixer': None,
+    'name': 'iql_ExpoComm_one_peer_n6',
+    'obs_agent_id': False,
+    'obs_individual_obs': False,
+    'obs_last_action': False,
+    'one_peer': True,
+    'optim_alpha': 0.99,
+    'optim_eps': 1e-05,
+    'packet_cache_ttl': 8,
+    'packet_imputer_checkpoint': '',
+    'packet_imputer_hidden_dim': 128,
+    'packet_loss_percent': 30.0,
+    'packet_loss_recovery': 'mse_imputer',
+    'packet_loss_test': True,
+    'packet_loss_train': False,
+    'pos_flag': False,
+    'record_video': False,
+    'render': False,
+    'repeat_id': 1,
+    'run_name': 'ExpoComm_Battle25_eval_5009240_Battle25_ttl_cache_ttl8_loss30_ttl8',
+    'runner': 'episode',
+    'runner_log_interval': 10000,
+    'save_model': False,
+    'save_model_interval': 50000,
+    'save_replay': False,
+    'seed': 0,
+    'standardise_returns': False,
+    'standardise_rewards': True,
+    't_max': 5050000,
+    'target_update_interval_or_tau': 200,
+    'test_greedy': True,
+    'test_interval': 50000,
+    'test_nepisode': 100,
+    'topk_neighbors': 6,
+    'use_cuda': False,
+    'use_rnn': True,
+    'use_tensorboard': False,
+    'video_fps': 10,
+    'video_path': '/home/b/bach66/ExpoComm/work_dirs/ExpoComm_Battle25/iql_ExpoComm_one_peer_n6/ExpoComm_Battle25_s0/20261012_220221/videos/battle_5009240.gif',
+    'work_dir': 'work_dirs/ExpoComm_Battle25_eval/iql_ExpoComm_one_peer_n6/ExpoComm_Battle25_eval_5009240_Battle25_ttl_cache_ttl8_loss30_ttl8/20261114_013626'}
+
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/pettingzoo/utils/conversions.py:157: UserWarning: The `observation_spaces` dictionary is deprecated. Use the `observation_space` function instead.
+  warnings.warn("The `observation_spaces` dictionary is deprecated. Use the `observation_space` function instead.")
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/pettingzoo/utils/conversions.py:165: UserWarning: The `action_spaces` dictionary is deprecated. Use the `action_space` function instead.
+  warnings.warn("The `action_spaces` dictionary is deprecated. Use the `action_space` function instead.")
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:51: UserWarning: The `observation_spaces` dictionary is deprecated. Use the `observation_space` function instead.
+  warnings.warn("The `observation_spaces` dictionary is deprecated. Use the `observation_space` function instead.")
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:59: UserWarning: The `action_spaces` dictionary is deprecated. Use the `action_space` function instead.
+  warnings.warn("The `action_spaces` dictionary is deprecated. Use the `action_space` function instead.")
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/pettingzoo/utils/conversions.py:61: UserWarning: The `observation_spaces` dictionary is deprecated. Use the `observation_space` function instead.
+  warnings.warn("The `observation_spaces` dictionary is deprecated. Use the `observation_space` function instead.")
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/pettingzoo/utils/conversions.py:69: UserWarning: The `action_spaces` dictionary is deprecated. Use the `action_space` function instead.
+  warnings.warn("The `action_spaces` dictionary is deprecated. Use the `action_space` function instead.")
+/home/b/bach66/ExpoComm/src/pretrained/magent.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  save_dict = torch.load(model_path, map_location=self.device)
+2026-11-14 01:36:30,595 - ExpoComm_Battle25_eval - iql_ExpoComm_one_peer_n6 - ExpoComm_Battle25_eval_5009240_Battle25_ttl_cache_ttl8_loss30_ttl8 - INFO - Loading model from /home/b/bach66/ExpoComm/work_dirs/ExpoComm_Battle25/iql_ExpoComm_one_peer_n6/ExpoComm_Battle25_s0/20261012_220221/models/5009240
+/home/b/bach66/ExpoComm/src/controllers/basic_controller.py:65: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  th.load(
+/home/b/bach66/ExpoComm/src/envs/battle_wrappers.py:241: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  actions = torch.tensor(actions, dtype=torch.long)
+2026-11-14 01:37:53,654 - ExpoComm_Battle25_eval - iql_ExpoComm_one_peer_n6 - ExpoComm_Battle25_eval_5009240_Battle25_ttl_cache_ttl8_loss30_ttl8 - INFO - Recent Stats | t_env:    5009240 | Episode:  5009240
+test_blue_team_alives_mean:  2.3500	test_blue_team_win_mean:   0.0200	test_ep_length_mean:     150.3000	test_episode_length_mean:149.3000
+test_red_team_alives_mean: 16.2700	test_red_team_win_mean:    0.9800	test_return_mean:          3.8270	test_return_std:           0.9971
+
+2026-11-14 01:37:53,655 - ExpoComm_Battle25_eval - iql_ExpoComm_one_peer_n6 - ExpoComm_Battle25_eval_5009240_Battle25_ttl_cache_ttl8_loss30_ttl8 - INFO - Finished Evaluation
+Exiting Main
+Stopping all threads
+Thread wandb-AsyncioManager-main is alive! Is daemon: True
+Thread joined
+Thread ChkStopThr is alive! Is daemon: True
+Thread joined
+Thread IntMsgThr is alive! Is daemon: True
+Thread joined
+Exiting script
+[1;34mwandb[0m: 
+[1;34mwandb[0m: 🚀 View run [33mExpoComm_Battle25_eval_5009240_Battle25_ttl_cache_ttl8_loss30_ttl8-iql_ExpoComm_one_peer_n6-20261114_013626[0m at: [34mhttps://wandb.ai/adamhermes66-tr-ng-i-h-c-khoa-h-c-t-nhi-n-hqg-hcm/ExpoComm_Battle25_eval/runs/uo4t4pxr[0m
+[1;34mwandb[0m: Find logs at: [1;35mwandb/run-20261114_013627-uo4t4pxr/logs[0m

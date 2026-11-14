@@ -1,0 +1,47 @@
+# Frozen-policy supervised training for the one-peer ExpoComm MSE imputer.
+action_selector: "epsilon_greedy"
+epsilon_start: 0.05
+epsilon_finish: 0.05
+epsilon_anneal_time: 1
+evaluation_epsilon: 0.0
+runner: "episode"
+
+mac: "ExpoComm_mac"
+topk_neighbors: 6
+one_peer: True
+agent: "ExpoComm_one_peer"
+obs_agent_id: False
+obs_last_action: False
+obs_individual_obs: False
+agent_output_type: "q"
+use_rnn: True
+mixer:
+
+learner: "mse_imputer_learner"
+packet_loss_recovery: "mse_imputer"
+packet_loss_percent: 70.0
+packet_loss_train: True
+packet_loss_test: True
+packet_cache_ttl: 8
+packet_imputer_hidden_dim: 128
+imputer_collect_targets: True
+imputer_lr: 0.001
+
+# Small batches limit memory because every sample is a full MAgent episode.
+buffer_size: 64
+batch_size: 4
+# run.py restores runner.t_env to the loaded RL checkpoint step (5,009,240),
+# so t_max is an absolute limit rather than an additional-step budget.
+# This trains the imputer for approximately 100k new environment steps.
+t_max: 5109240
+save_model: True
+save_model_interval: 20000
+test_interval: 1000000000
+test_nepisode: 20
+runner_log_interval: 5000
+learner_log_interval: 5000
+standardise_returns: False
+standardise_rewards: False
+double_q: False
+pos_flag: False
+name: "mse_ExpoImpute_n6"

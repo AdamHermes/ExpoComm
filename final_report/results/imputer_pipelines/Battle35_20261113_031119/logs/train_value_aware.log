@@ -1,0 +1,152 @@
+
+=== TRAINING value_aware IMPUTER ===
+src/main.py:82: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
+  if isinstance(v, collections.Mapping):
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from /home/b/bach66/.netrc.
+wandb: Currently logged in as: adamhermes66 (adamhermes66-tr-ng-i-h-c-khoa-h-c-t-nhi-n-hqg-hcm) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run 7rk1qzon
+wandb: Tracking run with wandb version 0.24.2
+wandb: Run data is saved locally in /home/b/bach66/ExpoComm/wandb/run-20261113_034407-7rk1qzon
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run ExpoComm_Battle35_va_imputer_5008875-va_ExpoImpute_n7-20261113_034406
+wandb: ⭐️ View project at https://wandb.ai/adamhermes66-tr-ng-i-h-c-khoa-h-c-t-nhi-n-hqg-hcm/ExpoComm_Battle35_va_imputer
+wandb: 🚀 View run at https://wandb.ai/adamhermes66-tr-ng-i-h-c-khoa-h-c-t-nhi-n-hqg-hcm/ExpoComm_Battle35_va_imputer/runs/7rk1qzon
+2026-11-13 03:44:10,733 - ExpoComm_Battle35_va_imputer - va_ExpoImpute_n7 - ExpoComm_Battle35_va_imputer_5008875 - INFO - Current directory: /home/b/bach66/ExpoComm.
+2026-11-13 03:44:10,734 - ExpoComm_Battle35_va_imputer - va_ExpoImpute_n7 - ExpoComm_Battle35_va_imputer_5008875 - INFO - Experiment Parameters:
+2026-11-13 03:44:10,736 - ExpoComm_Battle35_va_imputer - va_ExpoImpute_n7 - ExpoComm_Battle35_va_imputer_5008875 - INFO - 
+
+{   'action_selector': 'epsilon_greedy',
+    'add_value_last_step': True,
+    'agent': 'ExpoComm_one_peer',
+    'agent_output_type': 'q',
+    'batch_size': 4,
+    'batch_size_run': 1,
+    'buffer_cpu_only': True,
+    'buffer_size': 64,
+    'checkpoint_path': '/home/b/bach66/ExpoComm/work_dirs/ExpoComm_Battle35/iql_ExpoComm_one_peer_n7/ExpoComm_Battle35_s0/20261012_232152/models',
+    'double_q': False,
+    'env': 'MAgent_Battle',
+    'env_args': {   'global_reward': False,
+                    'map_name': 'battle_view7',
+                    'map_size': 35,
+                    'max_cycles': 200,
+                    'minimap_mode': True,
+                    'pretrained_ckpt': 'battle.pt',
+                    'seed': 0},
+    'epsilon_anneal_time': 1,
+    'epsilon_finish': 0.05,
+    'epsilon_start': 0.05,
+    'evaluate': False,
+    'evaluation_epsilon': 0.0,
+    'exp_name': 'ExpoComm_Battle35_va_imputer',
+    'gamma': 0.99,
+    'grad_norm_clip': 10,
+    'hidden_dim': 64,
+    'hypergroup': None,
+    'imputer_collect_targets': True,
+    'imputer_lr': 0.001,
+    'imputer_value_aware': True,
+    'imputer_value_lambda': 1.0,
+    'imputer_value_temperature': 1.0,
+    'imputer_value_weight_clip': 4.0,
+    'label': 'default_label',
+    'learner': 'mse_imputer_learner',
+    'learner_log_interval': 5000,
+    'load_step': 5008875,
+    'local_results_path': 'results',
+    'log_interval': 50000,
+    'lr': 0.0005,
+    'mac': 'ExpoComm_mac',
+    'mixer': None,
+    'name': 'va_ExpoImpute_n7',
+    'obs_agent_id': False,
+    'obs_individual_obs': False,
+    'obs_last_action': False,
+    'one_peer': True,
+    'optim_alpha': 0.99,
+    'optim_eps': 1e-05,
+    'packet_cache_ttl': 8,
+    'packet_imputer_checkpoint': '',
+    'packet_imputer_hidden_dim': 128,
+    'packet_loss_percent': 70.0,
+    'packet_loss_recovery': 'mse_imputer',
+    'packet_loss_test': True,
+    'packet_loss_train': True,
+    'pos_flag': False,
+    'record_video': False,
+    'render': False,
+    'repeat_id': 1,
+    'run_name': 'ExpoComm_Battle35_va_imputer_5008875',
+    'runner': 'episode',
+    'runner_log_interval': 5000,
+    'save_model': True,
+    'save_model_interval': 20000,
+    'save_replay': False,
+    'seed': 0,
+    'standardise_returns': False,
+    'standardise_rewards': False,
+    't_max': 5108875,
+    'test_greedy': True,
+    'test_interval': 1000000000,
+    'test_nepisode': 20,
+    'topk_neighbors': 7,
+    'use_cuda': True,
+    'use_rnn': True,
+    'use_tensorboard': False,
+    'work_dir': 'work_dirs/ExpoComm_Battle35_va_imputer/va_ExpoImpute_n7/ExpoComm_Battle35_va_imputer_5008875/20261113_034406'}
+
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/pettingzoo/utils/conversions.py:157: UserWarning: The `observation_spaces` dictionary is deprecated. Use the `observation_space` function instead.
+  warnings.warn("The `observation_spaces` dictionary is deprecated. Use the `observation_space` function instead.")
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/pettingzoo/utils/conversions.py:165: UserWarning: The `action_spaces` dictionary is deprecated. Use the `action_space` function instead.
+  warnings.warn("The `action_spaces` dictionary is deprecated. Use the `action_space` function instead.")
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:51: UserWarning: The `observation_spaces` dictionary is deprecated. Use the `observation_space` function instead.
+  warnings.warn("The `observation_spaces` dictionary is deprecated. Use the `observation_space` function instead.")
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:59: UserWarning: The `action_spaces` dictionary is deprecated. Use the `action_space` function instead.
+  warnings.warn("The `action_spaces` dictionary is deprecated. Use the `action_space` function instead.")
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/pettingzoo/utils/conversions.py:61: UserWarning: The `observation_spaces` dictionary is deprecated. Use the `observation_space` function instead.
+  warnings.warn("The `observation_spaces` dictionary is deprecated. Use the `observation_space` function instead.")
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/pettingzoo/utils/conversions.py:69: UserWarning: The `action_spaces` dictionary is deprecated. Use the `action_space` function instead.
+  warnings.warn("The `action_spaces` dictionary is deprecated. Use the `action_space` function instead.")
+/home/b/bach66/ExpoComm/src/pretrained/magent.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  save_dict = torch.load(model_path, map_location=self.device)
+2026-11-13 03:44:12,188 - ExpoComm_Battle35_va_imputer - va_ExpoImpute_n7 - ExpoComm_Battle35_va_imputer_5008875 - INFO - Loading model from /home/b/bach66/ExpoComm/work_dirs/ExpoComm_Battle35/iql_ExpoComm_one_peer_n7/ExpoComm_Battle35_s0/20261012_232152/models/5008875
+/home/b/bach66/ExpoComm/src/controllers/basic_controller.py:65: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  th.load(
+2026-11-13 03:44:12,196 - ExpoComm_Battle35_va_imputer - va_ExpoImpute_n7 - ExpoComm_Battle35_va_imputer_5008875 - INFO - Beginning training for 5108875 timesteps
+/home/b/bach66/ExpoComm/src/envs/battle_wrappers.py:241: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  actions = torch.tensor(actions, dtype=torch.long)
+2026-11-13 03:44:14,719 - ExpoComm_Battle35_va_imputer - va_ExpoImpute_n7 - ExpoComm_Battle35_va_imputer_5008875 - INFO - t_env: 5009075 / 5108875
+2026-11-13 03:44:14,720 - ExpoComm_Battle35_va_imputer - va_ExpoImpute_n7 - ExpoComm_Battle35_va_imputer_5008875 - INFO - Estimated time left: 0 seconds. Time passed: 2 seconds
+2026-11-13 03:44:53,761 - ExpoComm_Battle35_va_imputer - va_ExpoImpute_n7 - ExpoComm_Battle35_va_imputer_5008875 - INFO - Saving models to work_dirs/ExpoComm_Battle35_va_imputer/va_ExpoImpute_n7/ExpoComm_Battle35_va_imputer_5008875/20261113_034406/models/5009075
+2026-11-13 03:44:53,775 - ExpoComm_Battle35_va_imputer - va_ExpoImpute_n7 - ExpoComm_Battle35_va_imputer_5008875 - INFO - Recent Stats | t_env:    5009075 | Episode:        1
+blue_team_alives_mean:     8.0000	blue_team_win_mean:        0.0000	ep_length_mean:          200.0000	episode_length_mean:     199.0000
+epsilon:                   0.0500	red_team_alives_mean:     31.0000	red_team_win_mean:         1.0000	return_mean:               2.3254
+return_std:                0.0000	test_blue_team_alives_mean: 11.0000	test_blue_team_win_mean:   0.1500	test_ep_length_mean:     200.0000
+test_episode_length_mean:199.0000	test_red_team_alives_mean: 30.7000	test_red_team_win_mean:    0.8500	test_return_mean:          1.8411
+test_return_std:           2.1084	
+2026-11-13 03:49:32,592 - ExpoComm_Battle35_va_imputer - va_ExpoImpute_n7 - ExpoComm_Battle35_va_imputer_5008875 - INFO - Saving models to work_dirs/ExpoComm_Battle35_va_imputer/va_ExpoImpute_n7/ExpoComm_Battle35_va_imputer_5008875/20261113_034406/models/5029228
+2026-11-13 03:54:10,981 - ExpoComm_Battle35_va_imputer - va_ExpoImpute_n7 - ExpoComm_Battle35_va_imputer_5008875 - INFO - Saving models to work_dirs/ExpoComm_Battle35_va_imputer/va_ExpoImpute_n7/ExpoComm_Battle35_va_imputer_5008875/20261113_034406/models/5049283
+2026-11-13 03:56:28,838 - ExpoComm_Battle35_va_imputer - va_ExpoImpute_n7 - ExpoComm_Battle35_va_imputer_5008875 - INFO - Recent Stats | t_env:    5059247 | Episode:      255
+blue_team_alives_mean:    11.8669	blue_team_win_mean:        0.1696	ep_length_mean:          197.2037	episode_length_mean:     196.2037
+epsilon:                   0.0500	imputer_cache_mse:         0.0509	imputer_eligible_count:  5818.6000	imputer_grad_norm:         0.0190
+imputer_mse:               0.0225	imputer_value_importance_mean:  0.5448	imputer_value_weight_max:  2.3201	imputer_weighted_mse:      0.0316
+red_team_alives_mean:     30.5809	red_team_win_mean:         0.8224	return_mean:               1.8226	return_std:                1.6872
+test_blue_team_alives_mean: 11.0000	test_blue_team_win_mean:   0.1500	test_ep_length_mean:     200.0000	test_episode_length_mean:199.0000
+test_red_team_alives_mean: 30.7000	test_red_team_win_mean:    0.8500	test_return_mean:          1.8411	test_return_std:           2.1084
+
+2026-11-13 03:58:51,249 - ExpoComm_Battle35_va_imputer - va_ExpoImpute_n7 - ExpoComm_Battle35_va_imputer_5008875 - INFO - Saving models to work_dirs/ExpoComm_Battle35_va_imputer/va_ExpoImpute_n7/ExpoComm_Battle35_va_imputer_5008875/20261113_034406/models/5069369
+2026-11-13 04:03:30,060 - ExpoComm_Battle35_va_imputer - va_ExpoImpute_n7 - ExpoComm_Battle35_va_imputer_5008875 - INFO - Saving models to work_dirs/ExpoComm_Battle35_va_imputer/va_ExpoImpute_n7/ExpoComm_Battle35_va_imputer_5008875/20261113_034406/models/5089410
+2026-11-13 04:08:01,931 - ExpoComm_Battle35_va_imputer - va_ExpoImpute_n7 - ExpoComm_Battle35_va_imputer_5008875 - INFO - Finished Training
+Exiting Main
+Stopping all threads
+Thread wandb-AsyncioManager-main is alive! Is daemon: True
+Thread joined
+Thread ChkStopThr is alive! Is daemon: True
+Thread joined
+Thread IntMsgThr is alive! Is daemon: True
+Thread joined
+Exiting script
+[1;34mwandb[0m: 
+[1;34mwandb[0m: 🚀 View run [33mExpoComm_Battle35_va_imputer_5008875-va_ExpoImpute_n7-20261113_034406[0m at: [34mhttps://wandb.ai/adamhermes66-tr-ng-i-h-c-khoa-h-c-t-nhi-n-hqg-hcm/ExpoComm_Battle35_va_imputer/runs/7rk1qzon[0m
+[1;34mwandb[0m: Find logs at: [1;35mwandb/run-20261113_034407-7rk1qzon/logs[0m
+value_aware checkpoint: /home/b/bach66/ExpoComm/work_dirs/ExpoComm_Battle35_va_imputer/va_ExpoImpute_n7/ExpoComm_Battle35_va_imputer_5008875/20261113_034406/models/5089410/imputer.th

@@ -1,0 +1,6 @@
+method,loss_percent,cache_ttl,imputer_checkpoint,red_win_rate,return_mean,return_std,red_alive_mean,blue_alive_mean,log_path
+hold,30,0,none,0.9000,3.5614,1.3340,14.7500,3.5800,/home/b/bach66/ExpoComm/results/imputer_pipelines/Battle25_20261114_013311/logs/hold.log
+self_update_proxy_ttl0,30,0,none,0.9700,4.0565,0.9499,16.4500,2.0400,/home/b/bach66/ExpoComm/results/imputer_pipelines/Battle25_20261114_013311/logs/self_update_proxy_ttl0.log
+ttl_cache_ttl8,30,8,none,0.9800,3.8270,0.9971,16.2700,2.3500,/home/b/bach66/ExpoComm/results/imputer_pipelines/Battle25_20261114_013311/logs/ttl_cache_ttl8.log
+plain_mse_imputer,30,8,/home/b/bach66/ExpoComm/work_dirs/ExpoComm_Battle25_mse_imputer/mse_ExpoImpute_n6/ExpoComm_Battle25_mse_imputer_5009240_Battle25_plain_mse_trainloss30_ttl8/20261114_013803/models/5089758/imputer.th,0.9700,3.9028,1.1277,16.7600,2.2800,/home/b/bach66/ExpoComm/results/imputer_pipelines/Battle25_20261114_013311/logs/plain_mse_imputer.log
+va_expoimpute,30,8,/home/b/bach66/ExpoComm/work_dirs/ExpoComm_Battle25_va_imputer/va_ExpoImpute_n6/ExpoComm_Battle25_va_imputer_5009240_Battle25_value_aware_trainloss30_ttl8/20261114_102449/models/5089543/imputer.th,0.9600,3.9891,1.0862,16.6400,2.1700,/home/b/bach66/ExpoComm/results/imputer_pipelines/Battle25_20261114_013311/logs/va_expoimpute.log

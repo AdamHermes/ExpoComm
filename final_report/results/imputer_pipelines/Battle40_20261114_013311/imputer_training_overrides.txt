@@ -1,0 +1,4 @@
+packet_loss_percent=30
+packet_loss_mode=train
+packet_loss_recovery=mse_imputer
+packet_cache_ttl=8

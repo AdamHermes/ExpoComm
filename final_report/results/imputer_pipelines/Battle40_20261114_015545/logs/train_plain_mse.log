@@ -1,0 +1,153 @@
+
+=== TRAINING plain_mse IMPUTER ===
+src/main.py:82: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
+  if isinstance(v, collections.Mapping):
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from /home/b/bach66/.netrc.
+wandb: Currently logged in as: adamhermes66 (adamhermes66-tr-ng-i-h-c-khoa-h-c-t-nhi-n-hqg-hcm) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run lu5mee0v
+wandb: Tracking run with wandb version 0.24.2
+wandb: Run data is saved locally in /home/b/bach66/ExpoComm/wandb/run-20261114_020200-lu5mee0v
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8-mse_ExpoImpute_n7-20261114_020200
+wandb: ⭐️ View project at https://wandb.ai/adamhermes66-tr-ng-i-h-c-khoa-h-c-t-nhi-n-hqg-hcm/ExpoComm_Battle40_mse_imputer
+wandb: 🚀 View run at https://wandb.ai/adamhermes66-tr-ng-i-h-c-khoa-h-c-t-nhi-n-hqg-hcm/ExpoComm_Battle40_mse_imputer/runs/lu5mee0v
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/torch/cuda/__init__.py:128: UserWarning: CUDA initialization: CUDA unknown error - this may be due to an incorrectly set up environment, e.g. changing env variable CUDA_VISIBLE_DEVICES after program start. Setting the available devices to be zero. (Triggered internally at ../c10/cuda/CUDAFunctions.cpp:108.)
+  return torch._C._cuda_getDeviceCount() > 0
+2026-11-14 02:02:03,449 - ExpoComm_Battle40_mse_imputer - mse_ExpoImpute_n7 - ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8 - WARNING - CUDA flag use_cuda was switched OFF automatically because no CUDA devices are available!
+2026-11-14 02:02:03,451 - ExpoComm_Battle40_mse_imputer - mse_ExpoImpute_n7 - ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8 - INFO - Current directory: /home/b/bach66/ExpoComm.
+2026-11-14 02:02:03,451 - ExpoComm_Battle40_mse_imputer - mse_ExpoImpute_n7 - ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8 - INFO - Experiment Parameters:
+2026-11-14 02:02:03,453 - ExpoComm_Battle40_mse_imputer - mse_ExpoImpute_n7 - ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8 - INFO - 
+
+{   'action_selector': 'epsilon_greedy',
+    'add_value_last_step': True,
+    'agent': 'ExpoComm_one_peer',
+    'agent_output_type': 'q',
+    'batch_size': 4,
+    'batch_size_run': 1,
+    'buffer_cpu_only': True,
+    'buffer_size': 64,
+    'checkpoint_path': '/home/b/bach66/ExpoComm/work_dirs/ExpoComm_Battle40/iql_ExpoComm_one_peer_n7/ExpoComm_Battle40_s0/20261013_161128/models',
+    'double_q': False,
+    'env': 'MAgent_Battle',
+    'env_args': {   'global_reward': False,
+                    'map_name': 'battle_view7',
+                    'map_size': 40,
+                    'max_cycles': 200,
+                    'minimap_mode': True,
+                    'pretrained_ckpt': 'battle.pt',
+                    'seed': 0},
+    'epsilon_anneal_time': 1,
+    'epsilon_finish': 0.05,
+    'epsilon_start': 0.05,
+    'evaluate': False,
+    'evaluation_epsilon': 0.0,
+    'exp_name': 'ExpoComm_Battle40_mse_imputer',
+    'gamma': 0.99,
+    'grad_norm_clip': 10,
+    'hidden_dim': 64,
+    'hypergroup': None,
+    'imputer_collect_targets': True,
+    'imputer_lr': 0.001,
+    'imputer_value_aware': False,
+    'imputer_value_lambda': 1.0,
+    'imputer_value_temperature': 1.0,
+    'imputer_value_weight_clip': 4.0,
+    'label': 'default_label',
+    'learner': 'mse_imputer_learner',
+    'learner_log_interval': 5000,
+    'load_step': 5008330,
+    'local_results_path': 'results',
+    'log_interval': 50000,
+    'lr': 0.0005,
+    'mac': 'ExpoComm_mac',
+    'mixer': None,
+    'name': 'mse_ExpoImpute_n7',
+    'obs_agent_id': False,
+    'obs_individual_obs': False,
+    'obs_last_action': False,
+    'one_peer': True,
+    'optim_alpha': 0.99,
+    'optim_eps': 1e-05,
+    'packet_cache_ttl': 8,
+    'packet_imputer_checkpoint': '',
+    'packet_imputer_hidden_dim': 128,
+    'packet_loss_percent': 50.0,
+    'packet_loss_recovery': 'mse_imputer',
+    'packet_loss_test': False,
+    'packet_loss_train': True,
+    'pos_flag': False,
+    'record_video': False,
+    'render': False,
+    'repeat_id': 1,
+    'run_name': 'ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8',
+    'runner': 'episode',
+    'runner_log_interval': 5000,
+    'save_model': True,
+    'save_model_interval': 20000,
+    'save_replay': False,
+    'seed': 0,
+    'standardise_returns': False,
+    'standardise_rewards': False,
+    't_max': 5108330,
+    'test_greedy': True,
+    'test_interval': 1000000000,
+    'test_nepisode': 20,
+    'topk_neighbors': 7,
+    'use_cuda': False,
+    'use_rnn': True,
+    'use_tensorboard': False,
+    'work_dir': 'work_dirs/ExpoComm_Battle40_mse_imputer/mse_ExpoImpute_n7/ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8/20261114_020200'}
+
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/pettingzoo/utils/conversions.py:157: UserWarning: The `observation_spaces` dictionary is deprecated. Use the `observation_space` function instead.
+  warnings.warn("The `observation_spaces` dictionary is deprecated. Use the `observation_space` function instead.")
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/pettingzoo/utils/conversions.py:165: UserWarning: The `action_spaces` dictionary is deprecated. Use the `action_space` function instead.
+  warnings.warn("The `action_spaces` dictionary is deprecated. Use the `action_space` function instead.")
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:51: UserWarning: The `observation_spaces` dictionary is deprecated. Use the `observation_space` function instead.
+  warnings.warn("The `observation_spaces` dictionary is deprecated. Use the `observation_space` function instead.")
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:59: UserWarning: The `action_spaces` dictionary is deprecated. Use the `action_space` function instead.
+  warnings.warn("The `action_spaces` dictionary is deprecated. Use the `action_space` function instead.")
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/pettingzoo/utils/conversions.py:61: UserWarning: The `observation_spaces` dictionary is deprecated. Use the `observation_space` function instead.
+  warnings.warn("The `observation_spaces` dictionary is deprecated. Use the `observation_space` function instead.")
+/mnt/scratch/b/bach66/conda/envs/ExpoComm_test/lib/python3.8/site-packages/pettingzoo/utils/conversions.py:69: UserWarning: The `action_spaces` dictionary is deprecated. Use the `action_space` function instead.
+  warnings.warn("The `action_spaces` dictionary is deprecated. Use the `action_space` function instead.")
+/home/b/bach66/ExpoComm/src/pretrained/magent.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  save_dict = torch.load(model_path, map_location=self.device)
+2026-11-14 02:02:05,171 - ExpoComm_Battle40_mse_imputer - mse_ExpoImpute_n7 - ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8 - INFO - Loading model from /home/b/bach66/ExpoComm/work_dirs/ExpoComm_Battle40/iql_ExpoComm_one_peer_n7/ExpoComm_Battle40_s0/20261013_161128/models/5008330
+/home/b/bach66/ExpoComm/src/controllers/basic_controller.py:65: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  th.load(
+2026-11-14 02:02:05,183 - ExpoComm_Battle40_mse_imputer - mse_ExpoImpute_n7 - ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8 - INFO - Beginning training for 5108330 timesteps
+/home/b/bach66/ExpoComm/src/envs/battle_wrappers.py:241: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  actions = torch.tensor(actions, dtype=torch.long)
+2026-11-14 02:02:06,587 - ExpoComm_Battle40_mse_imputer - mse_ExpoImpute_n7 - ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8 - INFO - t_env: 5008458 / 5108330
+2026-11-14 02:02:06,588 - ExpoComm_Battle40_mse_imputer - mse_ExpoImpute_n7 - ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8 - INFO - Estimated time left: 0 seconds. Time passed: 1 seconds
+2026-11-14 02:02:22,960 - ExpoComm_Battle40_mse_imputer - mse_ExpoImpute_n7 - ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8 - INFO - Saving models to work_dirs/ExpoComm_Battle40_mse_imputer/mse_ExpoImpute_n7/ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8/20261114_020200/models/5008458
+2026-11-14 02:02:22,973 - ExpoComm_Battle40_mse_imputer - mse_ExpoImpute_n7 - ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8 - INFO - Recent Stats | t_env:    5008458 | Episode:        1
+blue_team_alives_mean:     1.0000	blue_team_win_mean:        0.0000	ep_length_mean:          128.0000	episode_length_mean:     127.0000
+epsilon:                   0.0500	red_team_alives_mean:     56.0000	red_team_win_mean:         1.0000	return_mean:               2.9410
+return_std:                0.0000	test_blue_team_alives_mean:  1.1500	test_blue_team_win_mean:   0.0000	test_ep_length_mean:      79.0500
+test_episode_length_mean: 78.0500	test_red_team_alives_mean: 57.5500	test_red_team_win_mean:    1.0000	test_return_mean:          4.4479
+test_return_std:           0.3554	
+2026-11-14 02:08:59,042 - ExpoComm_Battle40_mse_imputer - mse_ExpoImpute_n7 - ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8 - INFO - Saving models to work_dirs/ExpoComm_Battle40_mse_imputer/mse_ExpoImpute_n7/ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8/20261114_020200/models/5028547
+2026-11-14 02:15:33,713 - ExpoComm_Battle40_mse_imputer - mse_ExpoImpute_n7 - ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8 - INFO - Saving models to work_dirs/ExpoComm_Battle40_mse_imputer/mse_ExpoImpute_n7/ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8/20261114_020200/models/5048583
+2026-11-14 02:18:49,451 - ExpoComm_Battle40_mse_imputer - mse_ExpoImpute_n7 - ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8 - INFO - Recent Stats | t_env:    5058480 | Episode:      518
+blue_team_alives_mean:     1.4086	blue_team_win_mean:        0.0000	ep_length_mean:           98.1919	episode_length_mean:      97.1919
+epsilon:                   0.0500	imputer_cache_mse:         0.0903	imputer_eligible_count:  4668.6000	imputer_grad_norm:         0.0199
+imputer_mse:               0.0170	imputer_weighted_mse:      0.0170	red_team_alives_mean:     57.1347	red_team_win_mean:         1.0000
+return_mean:               4.1214	return_std:                0.8849	test_blue_team_alives_mean:  1.1500	test_blue_team_win_mean:   0.0000
+test_ep_length_mean:      79.0500	test_episode_length_mean: 78.0500	test_red_team_alives_mean: 57.5500	test_red_team_win_mean:    1.0000
+test_return_mean:          4.4479	test_return_std:           0.3554	
+2026-11-14 02:22:06,558 - ExpoComm_Battle40_mse_imputer - mse_ExpoImpute_n7 - ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8 - INFO - Saving models to work_dirs/ExpoComm_Battle40_mse_imputer/mse_ExpoImpute_n7/ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8/20261114_020200/models/5068607
+2026-11-14 02:28:38,663 - ExpoComm_Battle40_mse_imputer - mse_ExpoImpute_n7 - ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8 - INFO - Saving models to work_dirs/ExpoComm_Battle40_mse_imputer/mse_ExpoImpute_n7/ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8/20261114_020200/models/5088803
+2026-11-14 02:35:07,841 - ExpoComm_Battle40_mse_imputer - mse_ExpoImpute_n7 - ExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8 - INFO - Finished Training
+Exiting Main
+Stopping all threads
+Thread wandb-AsyncioManager-main is alive! Is daemon: True
+Thread joined
+Thread ChkStopThr is alive! Is daemon: True
+Thread joined
+Thread IntMsgThr is alive! Is daemon: True
+Thread joined
+Exiting script
+[1;34mwandb[0m: 
+[1;34mwandb[0m: 🚀 View run [33mExpoComm_Battle40_mse_imputer_5008330_Battle40_plain_mse_trainloss50_ttl8-mse_ExpoImpute_n7-20261114_020200[0m at: [34mhttps://wandb.ai/adamhermes66-tr-ng-i-h-c-khoa-h-c-t-nhi-n-hqg-hcm/ExpoComm_Battle40_mse_imputer/runs/lu5mee0v[0m
+[1;34mwandb[0m: Find logs at: [1;35mwandb/run-20261114_020200-lu5mee0v/logs[0m

@@ -1,0 +1,8 @@
+map=Battle35
+algorithm=iql_ExpoComm_one_peer_n7
+loss_percent=70
+cache_ttl=8
+test_episodes=100
+git_commit=bc6628c70a83e4878643ef5b0aabef4d9ab02d05
+started_at=2026-11-13T03:11:19+08:00
+finished_at=2026-11-13T04:11:10+08:00

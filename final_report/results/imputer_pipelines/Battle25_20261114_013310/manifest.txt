@@ -1,0 +1,9 @@
+map=Battle25
+algorithm=iql_ExpoComm_one_peer_n6
+eval_loss_percent=50
+train_loss_percent=50
+cache_ttl=8
+test_episodes=100
+git_commit=3b4e2ef7b5936430bf8952964b29063eefa4f4e8
+started_at=2026-11-14T01:33:10+08:00
+resumed_finished_at=2026-11-14T10:47:47+08:00

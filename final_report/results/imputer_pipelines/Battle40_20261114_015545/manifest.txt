@@ -1,0 +1,9 @@
+map=Battle40
+algorithm=iql_ExpoComm_one_peer_n7
+eval_loss_percent=50
+train_loss_percent=50
+cache_ttl=8
+test_episodes=100
+git_commit=3b4e2ef7b5936430bf8952964b29063eefa4f4e8
+started_at=2026-11-14T01:55:45+08:00
+resumed_finished_at=2026-11-14T11:03:21+08:00

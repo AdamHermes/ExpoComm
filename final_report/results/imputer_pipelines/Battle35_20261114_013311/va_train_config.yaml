@@ -1,0 +1,14 @@
+checkpoint_path: "/home/b/bach66/ExpoComm/work_dirs/ExpoComm_Battle35/iql_ExpoComm_one_peer_n7/ExpoComm_Battle35_s0/20261012_232152/models"
+load_step: 5008875
+evaluate: False
+render: False
+save_replay: False
+record_video: False
+use_cuda: True
+t_max: 5108875
+exp_name: ExpoComm_Battle35_va_imputer
+run_name: ExpoComm_Battle35_va_imputer_5008875
+seed: 0
+env_args:
+  map_size: 35
+  pretrained_ckpt: "battle.pt"

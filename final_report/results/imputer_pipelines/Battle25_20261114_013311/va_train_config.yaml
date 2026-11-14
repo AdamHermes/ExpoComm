@@ -1,0 +1,16 @@
+# Train only the value-aware residual imputer from the frozen Battle25 policy.
+checkpoint_path: "/home/b/bach66/ExpoComm/work_dirs/ExpoComm_Battle25/iql_ExpoComm_one_peer_n6/ExpoComm_Battle25_s0/20261012_220221/models"
+load_step: 5009240
+evaluate: False
+render: False
+save_replay: False
+record_video: False
+use_cuda: True
+
+exp_name: ExpoComm_Battle25_va_imputer
+run_name: ExpoComm_Battle25_va_imputer_5009240
+seed: 0
+
+env_args:
+  map_size: 25
+  pretrained_ckpt: "battle.pt"
